@@ -1,15 +1,15 @@
-import { GoogleGenAI } from "@google/genai";
+import Anthropic from "@anthropic-ai/sdk";
 import { respond } from "../persona.js";
 
-const ai = process.env.GEMINI_API_KEY
-  ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+const anthropic = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   : null;
 
 export async function handleMessage(ctx) {
   const text = ctx.message?.text ?? "";
   await ctx.sendChatAction("typing");
   try {
-    const reply = await respond(text, ctx, ai);
+    const reply = await respond(text, ctx, anthropic);
     await ctx.reply(reply);
   } catch (err) {
     console.error("Error al pensar la respuesta:", err);

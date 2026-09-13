@@ -19,32 +19,38 @@ Quién eres para él, según haga falta:
 
 Separas su mundo personal de su mundo profesional (Unity Street), salvo que él mismo mezcle los temas.`;
 
-// Una sesión de chat de Gemini por chat de Telegram (mantiene su propio historial).
-const chats = new Map();
+// Historial de conversación en memoria, por chat de Telegram.
+const histories = new Map();
+const MAX_TURNS = 20;
 
-function getChat(ai, chatId) {
-  if (!chats.has(chatId)) {
-    chats.set(
-      chatId,
-      ai.chats.create({
-        model: "gemini-2.5-flash",
-        config: { systemInstruction: SYSTEM_PROMPT },
-      })
-    );
-  }
-  return chats.get(chatId);
+function getHistory(chatId) {
+  if (!histories.has(chatId)) histories.set(chatId, []);
+  return histories.get(chatId);
 }
 
-function withInitial(text) {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
+export async function respond(text, ctx, anthropic) {
+  const chatId = ctx.chat.id;
+  const history = getHistory(chatId);
 
-export async function respond(text, ctx, ai) {
-  if (!ai) {
-    return `${withInitial(persona.ownerTitle)}, me falta el GEMINI_API_KEY en .env para poder pensar de verdad. Pásamelo y quedo listo.`;
+  if (!anthropic) {
+    return `${persona.ownerTitle.charAt(0).toUpperCase() + persona.ownerTitle.slice(1)}, me falta el ANTHROPIC_API_KEY en .env para poder pensar de verdad. Pásamelo y quedo listo.`;
   }
 
-  const chat = getChat(ai, ctx.chat.id);
-  const response = await chat.sendMessage({ message: text });
-  return response.text ?? "No supe qué responder a eso.";
+  history.push({ role: "user", content: text });
+  if (history.length > MAX_TURNS * 2) history.splice(0, history.length - MAX_TURNS * 2);
+
+  const response = await anthropic.messages.create({
+    model: "claude-opus-5",
+    max_tokens: 1024,
+    system: SYSTEM_PROMPT,
+    output_config: { effort: "low" },
+    messages: history,
+  });
+
+  const textBlock = response.content.find((b) => b.type === "text");
+  const reply = textBlock?.text ?? "";
+
+  history.push({ role: "assistant", content: response.content });
+
+  return reply;
 }

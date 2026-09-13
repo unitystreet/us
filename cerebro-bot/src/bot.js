@@ -22,7 +22,9 @@ if (OWNER_CHAT_ID) {
   });
 }
 
-bot.start((ctx) => ctx.reply(`Hola, ${persona.ownerTitle}. ${persona.welcomeMessage}`));
+bot.start((ctx) =>
+  ctx.reply(`Aquí estoy, ${persona.ownerTitle}. Dime qué necesitas.`)
+);
 
 bot.on("text", handleMessage);
 

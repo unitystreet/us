@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "telegraf": "^4.16.3",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "@anthropic-ai/sdk": "^0.68.0"
   }
 }

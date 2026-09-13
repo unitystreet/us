@@ -1,0 +1,16 @@
+{
+  "name": "cerebro-bot",
+  "version": "0.1.0",
+  "description": "Bot de Telegram — el cerebro de Unity Street",
+  "private": true,
+  "type": "module",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "dev": "node --watch src/bot.js"
+  },
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "dotenv": "^16.4.5"
+  }
+}

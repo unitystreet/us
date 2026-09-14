@@ -42,23 +42,27 @@ cero lenguaje corporativo. Evitar el tono genérico de plantilla
 ("Popular Products", "Explore our blog") que hoy sigue en el HTML sin
 traducir ni adaptar.
 
-## Paleta y tipografía (propuesta inicial, para su aprobación)
+## Paleta y tipografía — ya implementado (2026-09-14)
 
-Hoy el sitio hereda `--ff-roboto` (texto) y `--ff-mr_de_haviland` (una
-fuente script/cursiva, típica de plantillas de decoración — no encaja
-con streetwear). Propuesta:
+Con la autorización de plena libertad, esto dejó de ser propuesta y se
+aplicó directamente en `assets/css/style.css` e `index.html`:
 
-- **Tipografía:** reemplazar `--ff-mr_de_haviland` por algo de bloque,
-  urbano — ej. una condensada/bold (estilo *Archivo Black*, *Bebas
-  Neue* o *Anton*) para títulos, manteniendo Roboto o similar para texto
-  de cuerpo.
-- **Paleta:** negro/blanco de base + un solo color de acento fuerte
-  (rojo, verde neón o naranja) para "Sale", badges y CTAs — hoy el sitio
-  usa naranja y cian genéricos de la plantilla sin relación con una
-  identidad definida.
+- **Tipografía:** se reemplazó la fuente script `Mr De Haviland`
+  (típica de plantillas de decoración, no encajaba con streetwear) por
+  **Bebas Neue** — condensada, bold, urbana. Se aplicó al logo
+  (header/footer), a todos los títulos de sección (`.h2.section-title`:
+  "Nuestros Drops", "Únete a la lista") y al título "Unity Street" del
+  Sobre Nosotros. El texto de cuerpo se mantuvo en Roboto.
+- **Paleta:** el sitio ya tenía un rojo de acento consistente
+  (`--tan-crayola`, usado en hovers y estados activos) — se aprovechó
+  en vez de inventar uno nuevo. Se unificaron los badges "Sale" (antes
+  naranja genérico → ahora el rojo de marca) y "-10%" (antes cian
+  genérico → ahora negro), quedando negro/blanco + rojo como paleta
+  completa y consistente en todo el sitio.
 
-Esto es un punto de partida, no una decisión — necesito ver el logo
-(`logggo.png`) con usted y su opinión antes de tocar `assets/css/style.css`.
+Verificado visualmente con Playwright antes de subir — la fuente carga
+bien (Google Fonts es alcanzable) y se ve claramente distinta al
+fallback anterior.
 
 ## Legal / naming (como abogado — con límites claros)
 
@@ -89,6 +93,10 @@ ONAPI.
   datos reales (teléfono +1 849 861-2972, República Dominicana), hero
   y blog rotos arreglados/eliminados, sitio completo verificado
   visualmente con captura de pantalla antes de subir el cambio. Ver
-  `catalogo.md` para el detalle completo. Pendiente: paleta/tipografía
-  definitiva (no se tocó CSS de diseño, solo el bug de contraste del
-  hero) — eso sigue esperando su aprobación visual.
+  `catalogo.md` para el detalle completo.
+- **2026-09-14 (continuación, "sigue")** — Se implementa la propuesta
+  de tipografía (Bebas Neue) y se unifica la paleta de badges al rojo
+  de marca ya existente. Ya no queda ninguna decisión de diseño visual
+  pendiente de ejecución técnica — lo que resta (ver `estrategia.md` y
+  `tareas/inbox.md`) es de negocio, no de diseño: modelo de drops,
+  propuesta de valor final, más inventario, y el tema legal del nombre.

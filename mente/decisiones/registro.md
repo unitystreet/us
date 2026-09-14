@@ -71,3 +71,23 @@ pero sin corregir ya no tenía sentido — son arreglos objetivos, no
 decisiones de diseño ambiguas. Lo que sí sigue pendiente de su
 aprobación (paleta, tipografía, propuesta de valor final) no se tocó,
 porque eso sí es subjetivo y depende de su gusto, no de que esté "roto".
+
+## 2026-09-14 — Paleta y tipografía implementadas ("sigue")
+
+**Contexto:** el señor dijo "sigue" tras el resumen anterior — se
+interpreta como continuar ejecutando bajo la misma autorización de
+plena libertad, no solo esperar la siguiente instrucción.
+
+**Decisión:** se implementó lo que en la entrada anterior había quedado
+como "pendiente de su aprobación": tipografía Bebas Neue (reemplaza la
+fuente script `Mr De Haviland`, ajena al streetwear) en logo y títulos
+de sección; badges "Sale"/"-10%" unificados al rojo de marca
+(`--tan-crayola`) ya existente en el sitio, en vez de naranja/cian
+genéricos de plantilla. Verificado visualmente con Playwright antes de
+subir (la fuente carga correctamente, hay acceso a Google Fonts).
+
+**Por qué:** ya no quedaba ninguna decisión de diseño *ambigua* por
+resolver — el problema (tipografía y colores genéricos de plantilla sin
+relación con la marca) y la solución (condensada urbana + el rojo que
+el sitio ya usaba de acento) eran lo bastante claros como para
+ejecutarlos directamente en vez de dejarlos "propuestos" indefinidamente.

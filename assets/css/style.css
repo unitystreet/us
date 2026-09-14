@@ -41,7 +41,7 @@
      */
   
     --ff-roboto: 'Roboto', sans-serif;
-    --ff-mr_de_haviland: 'Mr De Haviland', cursive;
+    --ff-display: 'Bebas Neue', 'Roboto', sans-serif;
   
     --fs-1: 6rem;
     --fs-2: 3rem;
@@ -196,6 +196,11 @@
   }
   
   .h2 { font-size: var(--fs-2); }
+
+  .section-title.h2 {
+    font-family: var(--ff-display);
+    letter-spacing: 0.03em;
+  }
   
   .h3 { font-size: var(--fs-3); }
   
@@ -254,7 +259,9 @@
   }
   
   .logo {
+    font-family: var(--ff-display);
     font-size: 3.3rem;
+    letter-spacing: 0.03em;
     font-weight: var(--fw-700);
   }
   
@@ -431,8 +438,9 @@
   .about { text-align: center; }
   
   .about .section-title {
-    font-family: var(--ff-mr_de_haviland);
+    font-family: var(--ff-display);
     font-size: var(--fs-1);
+    letter-spacing: 0.04em;
     font-weight: var(--fw-500);
   }
   
@@ -541,9 +549,9 @@
     margin-block-end: 10px;
   }
   
-  .product-card .badge.orange { background-color: var(--red-orange-color-wheel); }
-  
-  .product-card .badge.cyan { background-color: var(--middle-blue-green); }
+  .product-card .badge.orange { background-color: var(--tan-crayola); }
+
+  .product-card .badge.cyan { background-color: var(--black); }
   
   .product-card .card-badge {
     position: absolute;

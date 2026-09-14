@@ -13,9 +13,13 @@ lugar — no es un archivo permanente.
       — corregidos a Unity Street, con teléfono y ubicación reales.
 - [x] Blog roto con contenido de plantilla — eliminado.
 
-## 🟡 Sigue pendiente — necesita su gusto/decisión, no es un bug
+## ✅ Resuelto el 2026-09-14 (continuación — tipografía y paleta)
 
-- [ ] Aprobar paleta y tipografía definitiva (propuesta en `marca.md`).
+- [x] Tipografía Bebas Neue aplicada a logo y títulos (era script/decoración antes).
+- [x] Badges "Sale"/"-10%" unificados al rojo de marca ya existente en vez de naranja/cian genéricos.
+
+## 🟡 Sigue pendiente — necesita su gusto/decisión de negocio, no es un bug ni de diseño
+
 - [ ] Confirmar si el modelo de negocio es de "drops" limitados.
 - [ ] Definir propuesta de valor final (ya hay un borrador real escrito
       en el "Sobre Nosotros" del sitio — solo falta confirmarlo o

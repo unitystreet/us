@@ -1,12 +1,21 @@
 # UNITY STREET — Marca
 
-## Estado actual (confirmado el 2026-09-14)
+## Estado actual (actualizado el 2026-09-14, tras corregir el sitio)
 
-El sitio parte de una plantilla eCommerce genérica (`codewithsadee`)
-rebrandeada solo a medias: el nombre y el logo (`logggo.png`) son
-propios, pero el 90% del catálogo (ver `catalogo.md`) sigue siendo
-contenido de la plantilla sin reemplazar. Hoy UNITY STREET no tiene
-identidad visual ni verbal propia todavía — la tiene que construir.
+El sitio partía de una plantilla eCommerce genérica (`codewithsadee`)
+rebrandeada solo a medias — el footer, meta tags y contacto todavía
+decían literalmente "Woodex" (la marca original de la plantilla), con
+direcciones y teléfono falsos. **Esto ya se corrigió directamente en
+`index.html`** (ver `catalogo.md` para el detalle completo). Hoy el
+sitio dice consistentemente "Unity Street" en todas partes, con datos
+de contacto reales.
+
+Lo que sí existe y es genuino: 3 fotos de producto reales (camisetas
+con diseños propios, no plantilla) y un texto de "Sobre Nosotros" ya
+escrito con voz propia: *"Unity Street nació de una pasión por la
+creatividad y la autoexpresión... la marca busca unir a las personas
+bajo un mismo concepto: autenticidad y conexión."* — esto SÍ es una
+propuesta de valor real, no hay que inventarla desde cero.
 
 ## Propuesta de valor (borrador — como diseñador/estratega, para validar)
 
@@ -70,8 +79,16 @@ ONAPI.
 
 ## Decisiones tomadas
 
-- **2026-09-14** — Se identifica que el catálogo real de la marca son
-  solo 2 productos ("Drop 000"); todo lo demás es placeholder de
-  plantilla. Ver `catalogo.md` para el detalle. No se toma ninguna
-  decisión de diseño final todavía — falta que el señor confirme
-  propuesta de valor y apruebe paleta/tipografía.
+- **2026-09-14** — Auditoría inicial: se identifica el catálogo real
+  (2 productos "Drop 000" duplicados + 1 "Drop 001" mal capitalizado,
+  mezclados con 16 slots de plantilla/rotos) y el footer/meta tags
+  todavía con la marca "Woodex" de la plantilla original.
+- **2026-09-14 (mismo día, con autorización de "plena libertad")** —
+  Se corrige directamente en `index.html`: catálogo recortado a los 3
+  productos reales, footer/meta/contacto pasados a Unity Street con
+  datos reales (teléfono +1 849 861-2972, República Dominicana), hero
+  y blog rotos arreglados/eliminados, sitio completo verificado
+  visualmente con captura de pantalla antes de subir el cambio. Ver
+  `catalogo.md` para el detalle completo. Pendiente: paleta/tipografía
+  definitiva (no se tocó CSS de diseño, solo el bug de contraste del
+  hero) — eso sigue esperando su aprobación visual.

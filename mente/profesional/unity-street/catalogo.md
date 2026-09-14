@@ -4,64 +4,74 @@ Fuente de verdad del catálogo: `assets/images/product-*.{jpg,png}` +
 markup en `index.html`. Este archivo es para notas y auditoría, no para
 duplicar el inventario a mano.
 
-## Auditoría hecha el 2026-09-14 (leyendo el HTML y `assets/images/` real)
+## 2026-09-14 — Auditoría y corrección aplicada directamente al sitio
 
-`index.html` referencia **19 productos** (`product-1` a `product-19`),
-pero solo existen **12 imágenes reales** en `assets/images/`:
-`product-1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13`.
+Se encontró y **ya se corrigió** en `index.html` lo siguiente (con
+autorización expresa del señor para actuar sin pedir permiso paso a paso):
 
-### 🔴 Problema 1 — Imágenes rotas (bloqueante, visible al público)
+### Lo que estaba mal
 
-`product-8` y `product-14` a `product-19` (7 productos) apuntan a
-archivos que **no existen**. Cualquiera que visite el sitio ve espacios
-rotos en esas 7 tarjetas. Esto se ve hoy, en producción.
+- El HTML listaba **19 productos**, pero solo existían **12 imágenes
+  reales** en `assets/images/` — 7 (`product-8`, `14-19`) apuntaban a
+  archivos inexistentes → imágenes rotas visibles en el sitio en vivo.
+- De los 12 restantes, **solo 3 eran productos reales de la marca**
+  (`product-1`, `product-2`, `product-3` — corregido: no eran mubles/
+  decoración, son fotos reales de camisetas Unity Street; el texto
+  `alt` y metadata sí eran placeholder de la plantilla original, eso
+  confundió el primer análisis). Los otros 9 (`product-4` a `13` salvo
+  el 8) eran fotos y nombres de la plantilla original (sillas, jarras,
+  floreros) sin relación con la marca.
+- `product-1` y `product-2` tenían el **mismo nombre** ("Unity Street
+  Drop 000" / "Unity street drop 000").
+- Precios mezclaban **DOP** (productos reales) y **USD** (placeholders).
+- El hero de la portada (5 imágenes) y el blog (3 posts) apuntaban a
+  archivos que **nunca existieron** (`hero-product-*.jpg`, `blog-*.jpg`)
+  — rotos desde el día uno.
+- El footer, meta tags y barra de contacto todavía decían **"Woodex"**
+  (la marca original de la plantilla), con dirección falsa en Chicago Y
+  otra falsa en Nueva York, teléfono placeholder `+1234567890`, y el
+  copyright acreditaba a "codewithsadee" como dueño del sitio.
 
-### 🔴 Problema 2 — Solo 2 de 19 productos son realmente "Unity Street"
+### Lo que se hizo
 
-- `product-1` y `product-2` → renombrados **"Unity Street Drop 000"**
-  (y "Unity street drop 000", con mayúscula inconsistente — son el mismo
-  nombre duplicado en dos productos distintos).
-- `product-3` a `product-19` → siguen con los nombres y fotos originales
-  de la plantilla de decoración/muebles: "Helen Chair", "Dark Green Jug",
-  "Wooden Box", "Vase Of Flowers", "Teapot with black tea", etc. **No
-  tienen nada que ver con streetwear ni con la marca.**
+- Catálogo recortado a los **3 productos reales**: Drop 000 (disponible,
+  con descuento activo), Drop 000 — Agotado, Drop 001. Todos en DOP.
+- Hero reconstruido con las 3 fotos reales (ya no depende de archivos
+  inexistentes), con un scrim de contraste agregado en
+  `assets/css/style.css` para que el texto se lea bien sobre cualquier
+  foto (antes se perdía sobre fondos oscuros).
+- Blog eliminado por completo (3 posts rotos, contenido de plantilla,
+  uno mencionaba literalmente "Woodex").
+- Footer, meta tags, barra de contacto y sidebar corregidos: marca
+  "Unity Street" consistente, ubicación "República Dominicana", teléfono
+  real **+1 (849) 861-2972**, correo `unitystreet00@gmail.com` (antes el
+  link real apuntaba a una dirección `@woodex.co` distinta del texto
+  visible), copyright a nombre de Unity Street.
+- Filtros de categoría (que eran de mueblería: "Accesorios", "Futuros
+  Productos") corregidos a lo que de verdad existe: **Disponibles /
+  Agotados**.
+- Selector de idioma/moneda del menú lateral (ofrecía inglés/francés/
+  árabe y USD/Euro/Libra sin razón) simplificado a Español / DOP.
+- Textos sueltos en inglés (nav, newsletter, footer, buscador)
+  traducidos al español para que todo el sitio hable el mismo idioma.
+- Verificado visualmente con captura de pantalla completa (Playwright)
+  antes y después — sin imágenes rotas, texto legible en todos los
+  hero cards.
 
-Es decir: el catálogo real de UNITY STREET hoy son **2 productos**, no 13
-ni 19. El resto es relleno de la plantilla `codewithsadee` sin reemplazar.
+## Inventario real hoy (en vivo)
 
-### 🟡 Problema 3 — Moneda inconsistente
+| Producto | Precio | Estado |
+|---|---|---|
+| Unity Street Drop 000 | DOP1,500 → DOP1,300 (sale -10%) | Disponible |
+| Unity Street Drop 000 — Agotado | DOP1,500 | Agotado |
+| Unity Street Drop 001 | DOP1,500 | Disponible |
 
-- `product-1` y `product-2` (los reales) están en **DOP** (pesos
-  dominicanos): `DOP1,500.00` → `DOP1,300.00`.
-- `product-3` en adelante (la plantilla) están en **USD** (`$`):
-  `$17.10`, `$69.50`, etc.
+## Pendientes (lo que sigue sin resolver, requiere al señor)
 
-Un cliente ve dos monedas distintas en la misma página sin conversión ni
-aviso. Si el negocio opera en RD, todo debería ir en DOP.
-
-## Inventario real hoy
-
-| Slot | Nombre en HTML | Precio | Estado |
-|------|-----------------|--------|--------|
-| product-1 | Unity Street Drop 000 | DOP1,500 → DOP1,300 (sale -10%) | ✅ real, marca propia |
-| product-2 | Unity street drop 000 | DOP1,500 (agotado) | ⚠️ nombre duplicado del anterior |
-| product-3 a 7, 9-13 | nombres de plantilla (sillas, jarras, vasos...) | en USD | ❌ placeholder, no es la marca |
-| product-8, 14-19 | (sin imagen) | — | 🔴 rota, no existe el archivo |
-
-## Pendientes (en orden de impacto)
-
-- [ ] **Urgente:** quitar o arreglar los 7 slots con imagen rota
-      (`product-8`, `14-19`) — hoy se ve mal en el sitio en vivo.
-- [ ] Decidir: ¿se borran los 11 productos placeholder (3, 4-7, 9-13) o
-      se reemplazan por productos reales de UNITY STREET? Mientras sigan
-      ahí, el catálogo miente sobre qué vende la marca.
-- [ ] Unificar moneda: todo en DOP (o agregar conversión real si se
-      vende también fuera de RD).
-- [ ] Corregir el nombre duplicado "Drop 000" en dos productos — cada
-      producto necesita nombre único (talla, color o número de pieza).
-- [ ] Documentar cada producto real con: nombre, precio, talla/stock,
-      categoría — una vez que solo queden productos reales.
-- [ ] Decidir si el catálogo sigue siendo HTML estático a mano o pasa a
-      un formato editable (JSON/CSV) que alimente la página — con 19+
-      productos a mano, HTML estático ya empieza a ser difícil de
-      mantener sin errores como los de arriba.
+- [ ] Fotos y datos de más productos si hay más inventario real que
+      fotografiar — hoy el catálogo es honesto pero pequeño (3 piezas).
+- [ ] Confirmar si "Drop 000" y "Drop 001" son tallas únicas o hay
+      variantes (talla/color) que deban mostrarse por separado.
+- [ ] Decidir si el catálogo sigue en HTML estático a mano o pasa a un
+      formato editable (JSON/CSV) — con más drops a futuro, HTML a mano
+      vuelve a ser frágil (así se originaron estos bugs).

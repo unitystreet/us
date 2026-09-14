@@ -388,25 +388,36 @@
   }
   
   .hero-card { position: relative; }
-  
+
   .hero-card .img-cover { transition: var(--transition-2); }
-  
+
   .hero-card:is(:hover, :focus) .img-cover { transform: scale(1.1); }
-  
+
+  .hero-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, hsla(0, 0%, 0%, 0.45), transparent 45%);
+    pointer-events: none;
+  }
+
   .hero-card .card-content {
     position: absolute;
     top: 30px;
     left: 30px;
     right: 30px;
   }
-  
+
   .hero-card :is(.card-title, .card-text) { font-weight: var(--fw-500); }
-  
+
   .hero-card .card-title {
     font-size: var(--fs-3);
+    color: var(--white);
     transition: var(--transition-1);
   }
-  
+
+  .hero-card .card-text { color: var(--white); }
+
   .hero-card .card-title:is(:hover, :focus) { color: var(--tan-crayola); }
   
   

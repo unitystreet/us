@@ -1,0 +1,508 @@
+<title>Afina para Affinity</title>
+<style>
+  :root {
+    --canvas-bg: #0e1116;
+    --canvas-grid: rgba(255, 255, 255, 0.05);
+    --panel-bg: #181d24;
+    --panel-header: #12161c;
+    --panel-border: #262d37;
+    --text-primary: #e9eaec;
+    --text-secondary: #9aa3af;
+    --text-muted: #6b7480;
+    --accent: #7c6cff;
+    --accent-soft: rgba(124, 108, 255, 0.16);
+    --ok: #34c58b;
+    --info: #4fa8e0;
+    --warn: #e3a23a;
+    --danger: #e0577b;
+    --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+    --font-ui: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--canvas-bg);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .stage {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stage-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--canvas-grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+
+  .stage-ghost {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.5rem, 9vw, 7rem);
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.035);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .intro {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    right: 24px;
+    max-width: 480px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  .intro strong { color: var(--text-primary); font-family: var(--font-display); font-size: 1rem; font-weight: 600; }
+
+  .widget {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(520px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.02);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .widget-header {
+    background: var(--panel-header);
+    border-bottom: 1px solid var(--panel-border);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .widget-header:active { cursor: grabbing; }
+
+  .widget-id { display: flex; align-items: baseline; gap: 8px; }
+  .widget-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    display: inline-block;
+  }
+  .widget-name { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; }
+  .widget-tag { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .widget-controls button {
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .widget-controls button:hover { color: var(--text-primary); border-color: var(--accent); }
+
+  .widget-body { padding: 14px; overflow-y: auto; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .tab {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--text-primary); }
+
+  .panel[hidden] { display: none; }
+
+  .field-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    background: var(--canvas-bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    padding: 9px 10px;
+    border-radius: 8px;
+    resize: vertical;
+  }
+  textarea { font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.5; }
+  input:focus-visible, textarea:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .results { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+
+  .card {
+    border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.015);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .card-app { font-size: 0.68rem; color: var(--text-muted); text-align: right; }
+  .card-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin: 0 0 4px; }
+  .card-equiv { font-size: 0.83rem; margin: 0 0 4px; }
+  .card-loc, .card-shortcut { font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 3px; }
+  .card-notes { font-size: 0.78rem; color: var(--text-secondary); margin: 6px 0 0; line-height: 1.4; }
+  .mono { font-family: var(--font-mono); color: var(--text-primary); }
+
+  .badge {
+    font-size: 0.64rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 2px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge.estable { background: rgba(52, 197, 139, 0.15); color: var(--ok); }
+  .badge.similar { background: rgba(79, 168, 224, 0.15); color: var(--info); }
+  .badge.workaround { background: rgba(227, 162, 58, 0.15); color: var(--warn); }
+  .badge.verificar { background: rgba(224, 87, 123, 0.15); color: var(--danger); }
+
+  .empty-state { font-size: 0.8rem; color: var(--text-muted); padding: 10px 2px; }
+
+  .tutorial-actions { display: flex; align-items: center; gap: 10px; margin: 10px 0; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: 0.83rem;
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; }
+  .status-text { font-size: 0.75rem; color: var(--text-muted); }
+
+  .local-preview { margin-top: 4px; }
+  .preview-line { border-left: 2px solid var(--panel-border); padding: 6px 0 6px 10px; margin-bottom: 6px; }
+  .preview-line-text { font-size: 0.8rem; color: var(--text-secondary); margin: 0 0 4px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-size: 0.68rem;
+    border: 1px solid var(--panel-border);
+    padding: 2px 8px;
+    border-radius: 999px;
+    color: var(--text-primary);
+  }
+  .unmatched-note { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+
+  .expert-report {
+    margin-top: 12px;
+    border: 1px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 0.83rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .legend {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid var(--panel-border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot.ok { background: var(--ok); }
+  .dot.info { background: var(--info); }
+  .dot.warn { background: var(--warn); }
+  .dot.danger { background: var(--danger); }
+
+  @media (max-width: 460px) {
+    .intro { display: none; }
+  }
+</style>
+
+<div class="stage">
+  <div class="stage-grid" aria-hidden="true"></div>
+  <div class="stage-ghost" aria-hidden="true">PSD → AFFINITY</div>
+
+  <p class="intro">
+    <strong>Prototipo web de Afina.</strong>
+    Esta vista simula la ventana flotante dentro del navegador. Arrastra la barra superior del panel para moverlo.
+    La versión de escritorio (Electron) flota sobre cualquier programa abierto en tu computadora.
+  </p>
+
+  <div class="widget" id="widget">
+    <header class="widget-header" id="widgetHeader">
+      <div class="widget-id">
+        <span class="widget-dot" aria-hidden="true"></span>
+        <span class="widget-name">Afina</span>
+        <span class="widget-tag">Copiloto Affinity</span>
+      </div>
+      <div class="widget-controls">
+        <button id="collapseBtn" type="button" aria-label="Colapsar panel">—</button>
+      </div>
+    </header>
+
+    <div class="widget-body" id="widgetBody">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" id="tabQuickBtn" type="button" role="tab" aria-selected="true">Traductor rápido</button>
+        <button class="tab" id="tabTutorialBtn" type="button" role="tab" aria-selected="false">Analizar tutorial</button>
+      </nav>
+
+      <section class="panel" id="panelQuick" role="tabpanel">
+        <label class="field-label" for="quickQuery">Herramienta o concepto de Photoshop / Illustrator</label>
+        <input type="text" id="quickQuery" value="smart object" placeholder="ej. pathfinder, liquify, clipping mask..." autocomplete="off" />
+        <div class="results" id="quickResults"></div>
+      </section>
+
+      <section class="panel" id="panelTutorial" role="tabpanel" hidden>
+        <label class="field-label" for="tutorialInput">Pega los pasos o la transcripción del tutorial</label>
+        <textarea id="tutorialInput" rows="6">1. Duplica la capa y conviértela en Smart Object.
+2. Aplica Camera Raw Filter para ajustar la temperatura de color.
+3. Usa el Pen Tool para recortar el producto del fondo.
+4. Añade una capa de ajuste Curves con clipping mask.
+5. Usa Content-Aware Fill para limpiar imperfecciones del fondo.</textarea>
+
+        <div class="tutorial-actions">
+          <button class="btn-primary" id="analyzeBtn" type="button">Traducir con IA experta</button>
+          <span class="status-text" id="analyzeStatus"></span>
+        </div>
+
+        <div class="local-preview" id="localPreview"></div>
+        <div class="expert-report" id="expertReport" hidden></div>
+      </section>
+
+      <footer class="legend">
+        <span class="legend-item"><i class="dot ok" aria-hidden="true"></i>Equivalencia directa</span>
+        <span class="legend-item"><i class="dot info" aria-hidden="true"></i>Similar</span>
+        <span class="legend-item"><i class="dot warn" aria-hidden="true"></i>Workaround</span>
+        <span class="legend-item"><i class="dot danger" aria-hidden="true"></i>Verificar versión</span>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script src="knowledge-base.js"></script>
+<script src="engine.js"></script>
+<script>
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    }[c]));
+  }
+
+  const CONFIDENCE_LABEL = {
+    estable: "Equivalencia directa",
+    similar: "Similar",
+    workaround: "Workaround",
+    verificar: "Verificar versión",
+  };
+
+  function entryCard(e) {
+    const shortcut = e.shortcut && e.shortcut !== "N/A"
+      ? `<p class="card-shortcut">Atajo: <span class="mono">${escapeHtml(e.shortcut)}</span></p>` : "";
+    return `<article class="card">
+      <div class="card-top">
+        <span class="badge ${e.confidence}">${CONFIDENCE_LABEL[e.confidence] || e.confidence}</span>
+        <span class="card-app">${escapeHtml(e.source_app)} → ${escapeHtml(e.affinity_app)}</span>
+      </div>
+      <h3 class="card-title">${escapeHtml((e.aliases && e.aliases[0]) || e.id)}</h3>
+      <p class="card-equiv"><strong>Equivalente:</strong> ${escapeHtml(e.equivalent)}</p>
+      <p class="card-loc"><span class="mono">${escapeHtml(e.location)}</span></p>
+      ${shortcut}
+      <p class="card-notes">${escapeHtml(e.notes)}</p>
+    </article>`;
+  }
+
+  // ---- Traductor rápido ----
+  const quickQuery = document.getElementById("quickQuery");
+  const quickResults = document.getElementById("quickResults");
+
+  function renderQuick() {
+    const results = AffinityEngine.search(quickQuery.value, 6);
+    quickResults.innerHTML = results.length
+      ? results.map(entryCard).join("")
+      : `<p class="empty-state">Sin coincidencias locales todavía. Prueba con: smart object, pathfinder, liquify, symbols, blend tool...</p>`;
+  }
+  quickQuery.addEventListener("input", renderQuick);
+  renderQuick();
+
+  // ---- Tabs ----
+  const tabQuickBtn = document.getElementById("tabQuickBtn");
+  const tabTutorialBtn = document.getElementById("tabTutorialBtn");
+  const panelQuick = document.getElementById("panelQuick");
+  const panelTutorial = document.getElementById("panelTutorial");
+
+  function setTab(which) {
+    const isQuick = which === "quick";
+    panelQuick.hidden = !isQuick;
+    panelTutorial.hidden = isQuick;
+    tabQuickBtn.classList.toggle("active", isQuick);
+    tabTutorialBtn.classList.toggle("active", !isQuick);
+    tabQuickBtn.setAttribute("aria-selected", String(isQuick));
+    tabTutorialBtn.setAttribute("aria-selected", String(!isQuick));
+  }
+  tabQuickBtn.addEventListener("click", () => setTab("quick"));
+  tabTutorialBtn.addEventListener("click", () => setTab("tutorial"));
+
+  // ---- Analizar tutorial (local + IA) ----
+  const tutorialInput = document.getElementById("tutorialInput");
+  const localPreview = document.getElementById("localPreview");
+  const expertReport = document.getElementById("expertReport");
+  const analyzeBtn = document.getElementById("analyzeBtn");
+  const analyzeStatus = document.getElementById("analyzeStatus");
+
+  function renderLocalPreview(result) {
+    const lines = result.matches.map((m) => `
+      <div class="preview-line">
+        <p class="preview-line-text">${escapeHtml(m.line)}</p>
+        <div class="chip-row">
+          ${m.entries.map((e) => `<span class="chip badge ${e.confidence}">${escapeHtml(e.equivalent)}</span>`).join("")}
+        </div>
+      </div>`).join("");
+
+    const unmatched = result.unmatchedLines.length
+      ? `<p class="unmatched-note">${result.unmatchedLines.length} paso(s) sin coincidencia local exacta — el análisis experto de IA los cubre abajo.</p>`
+      : "";
+
+    localPreview.innerHTML = (lines || `<p class="empty-state">Sin coincidencias locales. Pulsa "Traducir con IA experta" para un análisis completo.</p>`) + unmatched;
+  }
+
+  renderLocalPreview(AffinityEngine.translateText(tutorialInput.value));
+  tutorialInput.addEventListener("input", () => {
+    renderLocalPreview(AffinityEngine.translateText(tutorialInput.value));
+  });
+
+  async function getSample() {
+    if (!window.claude || !window.claude.use) return null;
+    try {
+      return await window.claude.use("sample");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  analyzeBtn.addEventListener("click", async () => {
+    const text = tutorialInput.value.trim();
+    if (!text) return;
+
+    const local = AffinityEngine.translateText(text);
+    renderLocalPreview(local);
+
+    expertReport.hidden = false;
+    expertReport.textContent = "Consultando al experto IA…";
+    analyzeStatus.textContent = "";
+    analyzeBtn.disabled = true;
+
+    try {
+      const sample = await getSample();
+      if (!sample) {
+        expertReport.textContent = "El análisis experto por IA no está disponible en esta vista (no se otorgó o no se sirvió la capacidad). Las coincidencias locales de arriba siguen siendo válidas.";
+        return;
+      }
+      const prompt = AffinityEngine.buildExpertPrompt(text, local);
+      const res = await sample(prompt, {
+        modelTier: "default",
+        onText: ({ text }) => { expertReport.textContent = text; },
+      });
+      expertReport.textContent = res.text;
+      if (res.truncated) {
+        analyzeStatus.textContent = "Respuesta truncada por longitud.";
+      }
+    } catch (err) {
+      const code = err && err.code;
+      if (code === "not_granted") {
+        expertReport.textContent = "No se concedió permiso para consultar a la IA. Puedes seguir usando las coincidencias locales de arriba.";
+      } else if (code === "rate_limited") {
+        expertReport.textContent = "Demasiadas solicitudes por ahora. Espera un momento y vuelve a intentar.";
+      } else if (code === "cancelled") {
+        expertReport.textContent = "Consulta cancelada.";
+      } else {
+        expertReport.textContent = "No se pudo completar el análisis experto (" + (err && err.message ? err.message : "error desconocido") + "). Las coincidencias locales de arriba siguen siendo válidas.";
+      }
+    } finally {
+      analyzeBtn.disabled = false;
+    }
+  });
+
+  // ---- Arrastrar el panel flotante ----
+  const widget = document.getElementById("widget");
+  const widgetHeader = document.getElementById("widgetHeader");
+  let dragging = false, offsetX = 0, offsetY = 0;
+
+  widgetHeader.addEventListener("pointerdown", (ev) => {
+    if (ev.target.closest("button")) return;
+    dragging = true;
+    const rect = widget.getBoundingClientRect();
+    widget.style.transform = "none";
+    widget.style.left = rect.left + "px";
+    widget.style.top = rect.top + "px";
+    offsetX = ev.clientX - rect.left;
+    offsetY = ev.clientY - rect.top;
+    widgetHeader.setPointerCapture(ev.pointerId);
+  });
+  widgetHeader.addEventListener("pointermove", (ev) => {
+    if (!dragging) return;
+    const maxX = window.innerWidth - widget.offsetWidth;
+    const maxY = window.innerHeight - widget.offsetHeight;
+    const x = Math.max(0, Math.min(ev.clientX - offsetX, Math.max(0, maxX)));
+    const y = Math.max(0, Math.min(ev.clientY - offsetY, Math.max(0, maxY)));
+    widget.style.left = x + "px";
+    widget.style.top = y + "px";
+  });
+  widgetHeader.addEventListener("pointerup", () => { dragging = false; });
+  widgetHeader.addEventListener("pointercancel", () => { dragging = false; });
+
+  // ---- Colapsar ----
+  const collapseBtn = document.getElementById("collapseBtn");
+  const widgetBody = document.getElementById("widgetBody");
+  collapseBtn.addEventListener("click", () => {
+    widgetBody.hidden = !widgetBody.hidden;
+    collapseBtn.textContent = widgetBody.hidden ? "▢" : "—";
+    collapseBtn.setAttribute("aria-label", widgetBody.hidden ? "Expandir panel" : "Colapsar panel");
+  });
+</script>

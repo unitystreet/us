@@ -1,0 +1,27 @@
+{
+  "name": "afina-affinity-copilot",
+  "version": "0.1.0",
+  "description": "Copiloto flotante de escritorio: traduce tutoriales de Photoshop/Illustrator al flujo equivalente en Affinity Photo/Designer.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.unitystreet.afina",
+    "productName": "Afina",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "mac": { "target": "dmg", "category": "public.app-category.graphics-design" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage", "category": "Graphics" }
+  }
+}

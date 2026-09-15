@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Unity Global — Entender el mundo, actuar en él</title>
+  <meta name="description"
+    content="Unity Global: un mapa claro de los grandes problemas mundiales y una vía directa para actuar sobre ellos, desde tu barrio hasta el planeta.">
+  <link rel="icon" href="../logggo.png" type="image/x-icon">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mr+De+Haviland&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+  <header class="ug-header" data-header>
+    <div class="ug-container ug-header-inner">
+      <a href="./index.html" class="ug-logo">Unity <span>Global</span></a>
+
+      <nav class="ug-nav" data-nav>
+        <a href="#problemas" class="ug-nav-link">Problemas</a>
+        <a href="#metodo" class="ug-nav-link">Método</a>
+        <a href="#actuar" class="ug-nav-link">Actuar</a>
+        <a href="#transparencia" class="ug-nav-link">Transparencia</a>
+        <a href="../index.html" class="ug-nav-link ug-nav-link--muted">← Unity Street</a>
+      </nav>
+
+      <button class="ug-burger" aria-label="Abrir menú" data-nav-toggle>
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="ug-hero ug-container">
+      <p class="ug-eyebrow">Análisis global · Acción local</p>
+      <h1 class="ug-hero-title">El mundo tiene demasiados problemas abiertos en demasiadas pestañas.<br>
+        Unity Global los pone en una sola.</h1>
+      <p class="ug-hero-lead">
+        No prometemos "resolver el mundo" con una app: eso sería una mentira de startup. Lo que sí hacemos es lo que
+        una buena app puede hacer de verdad — <strong>traducir</strong> los grandes problemas globales a lenguaje
+        claro, <strong>conectarte</strong> con las organizaciones verificadas que ya trabajan en ellos, y
+        <strong>medir</strong> con honestidad lo que tu comunidad aporta.
+      </p>
+      <div class="ug-hero-actions">
+        <a href="#problemas" class="ug-btn ug-btn--primary">Ver el diagnóstico</a>
+        <a href="#actuar" class="ug-btn ug-btn--ghost">Quiero actuar ya</a>
+      </div>
+      <p class="ug-hero-note" id="pledge-note">Aún nadie se ha unido desde este dispositivo.</p>
+    </section>
+
+    <!-- PROBLEMAS -->
+    <section id="problemas" class="ug-section ug-container">
+      <h2 class="ug-section-title">Diagnóstico: los 8 frentes que están tensionando al planeta</h2>
+      <p class="ug-section-lead">Curado a partir de fuentes públicas de referencia (ONU, ACNUR, OMS, Banco Mundial,
+        FMI, UNESCO, FAO). Las cifras se dan como aproximaciones para entender la magnitud, no como estadística
+        exacta en tiempo real — cada tarjeta enlaza a la fuente primaria para verificar el dato actual.</p>
+
+      <div class="ug-filters" id="filters" role="tablist" aria-label="Filtrar por categoría"></div>
+
+      <div class="ug-grid" id="issues-grid"></div>
+    </section>
+
+    <!-- MÉTODO -->
+    <section id="metodo" class="ug-section ug-section--alt">
+      <div class="ug-container">
+        <h2 class="ug-section-title">El método: tres roles, un mismo flujo</h2>
+        <p class="ug-section-lead">Cada problema global se ataca igual que un problema personal: primero se entiende,
+          luego se actúa, y al final se rinden cuentas de lo hecho.</p>
+
+        <div class="ug-pillars">
+          <article class="ug-pillar">
+            <span class="ug-pillar-icon" aria-hidden="true">📚</span>
+            <h3>Entender <em>— el maestro</em></h3>
+            <p>Cada tema trae contexto sin jerga, causas reales y qué está probado que funciona. Nada de pánico,
+              nada de negacionismo: solo el mapa.</p>
+          </article>
+          <article class="ug-pillar">
+            <span class="ug-pillar-icon" aria-hidden="true">⚖️</span>
+            <h3>Tus derechos <em>— el abogado</em></h3>
+            <p>Fichas rápidas de derechos aplicables (migración, trabajo, vivienda, salud) con enlace a la entidad
+              oficial de tu país o región para el caso concreto.</p>
+          </article>
+          <article class="ug-pillar">
+            <span class="ug-pillar-icon" aria-hidden="true">📊</span>
+            <h3>Rendir cuentas <em>— el contable</em></h3>
+            <p>Antes de pedirte una acción, mostramos quién verifica a esa organización (Charity Navigator, ONU,
+              registros oficiales) para que tu tiempo o dinero no se pierdan en el camino.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTUAR -->
+    <section id="actuar" class="ug-section ug-container">
+      <h2 class="ug-section-title">Actuar: de lo global a tu cuadra</h2>
+      <p class="ug-section-lead">Elige un frente y un tamaño de compromiso. Todo enlaza a la organización real, no a
+        un formulario nuestro que no lleva a ningún lado.</p>
+
+      <div class="ug-action-panel">
+        <div class="ug-action-form">
+          <label for="commit-select">Me comprometo con:</label>
+          <select id="commit-select"></select>
+          <button id="commit-btn" class="ug-btn ug-btn--primary" type="button">Unirme al movimiento</button>
+        </div>
+        <div class="ug-action-list" id="commit-log" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- TRANSPARENCIA -->
+    <section id="transparencia" class="ug-section ug-section--alt">
+      <div class="ug-container">
+        <h2 class="ug-section-title">Transparencia sobre esta misma app</h2>
+        <ul class="ug-honesty-list">
+          <li>Los contadores de esta página viven en <strong>tu navegador</strong> (localStorage). No es un contador
+            global real — hacerlo pasar por eso sería la primera mentira que evitamos.</li>
+          <li>No procesamos donaciones ni datos personales: cada acción te redirige a la organización oficial, donde
+            ellos son responsables de tu información.</li>
+          <li>El diagnóstico se revisa manualmente; si una cifra o un enlace queda desactualizado, repórtalo desde el
+            botón "Contact Us" de Unity Street.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="ug-footer">
+    <div class="ug-container ug-footer-inner">
+      <p>Unity Global es una iniciativa hermana de <a href="../index.html">Unity Street</a>.</p>
+      <p class="ug-footer-muted">Hecho para entender antes de opinar, y actuar antes de resignarse.</p>
+    </div>
+  </footer>
+
+  <script src="./js/app.js"></script>
+</body>
+
+</html>

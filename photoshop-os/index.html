@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photoshop OS — El manual definitivo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2218%22 fill=%22%23001e36%22/><text x=%2250%22 y=%2268%22 font-size=%2254%22 font-family=%22Arial%22 fill=%22%2331a8ff%22 text-anchor=%22middle%22>Ps</text></svg>">
+<style>
+:root{
+  --blue:#31a8ff; --blue-dark:#001e36; --panel:#141414; --panel2:#1d1d1d;
+  --border:#333; --text:#e8e8e8; --muted:#9a9a9a; --accent:#ffcc00; --ok:#3ddc84;
+  --win-w:min(920px,92vw); --win-h:min(640px,80vh);
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--text);
+  background:radial-gradient(circle at 20% 20%,#0d2a44,#050810 60%);
+  overflow:hidden;
+  user-select:none;
+}
+
+/* ---------- BOOT SCREEN ---------- */
+#boot{
+  position:fixed;inset:0;background:#000;color:var(--blue);z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  font-family:"Courier New",monospace;
+}
+#boot .logo{font-size:64px;font-weight:900;letter-spacing:2px;color:#fff;
+  background:linear-gradient(135deg,#31a8ff,#001e36);padding:18px 26px;border-radius:16px;}
+#boot .bar{width:280px;height:6px;background:#111;border-radius:4px;overflow:hidden;border:1px solid #223;}
+#boot .bar i{display:block;height:100%;width:0;background:var(--blue);animation:load 1.4s ease forwards;}
+#boot small{color:var(--muted);letter-spacing:1px;}
+@keyframes load{to{width:100%;}}
+#boot.hide{animation:fade .4s ease forwards;}
+@keyframes fade{to{opacity:0;visibility:hidden;}}
+
+/* ---------- DESKTOP ---------- */
+#desktop{position:fixed;inset:0;padding-top:34px;padding-bottom:46px;}
+.menubar{
+  position:fixed;top:0;left:0;right:0;height:34px;z-index:500;
+  background:#111;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 10px;gap:2px;font-size:13px;
+}
+.menubar .brand{font-weight:800;color:var(--blue);margin-right:14px;letter-spacing:.5px;}
+.menubar .m{padding:6px 10px;border-radius:6px;cursor:pointer;color:#ccc;position:relative;}
+.menubar .m:hover,.menubar .m.open{background:var(--blue);color:#001e36;font-weight:600;}
+.menu-drop{
+  position:absolute;top:32px;left:0;min-width:230px;background:#181818;border:1px solid var(--border);
+  border-radius:8px;padding:6px;display:none;box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:600;
+}
+.menu-drop.show{display:block;}
+.menu-drop div{padding:7px 10px;border-radius:5px;font-size:12.5px;color:#ddd;cursor:default;}
+.menu-drop div:hover{background:#26262b;color:var(--blue);}
+.menu-drop .sep{height:1px;background:var(--border);margin:5px 2px;padding:0;}
+
+#icons{
+  display:grid;grid-template-columns:repeat(auto-fill,86px);grid-auto-rows:96px;
+  gap:6px;padding:18px;height:100%;align-content:start;
+}
+.icon{
+  width:86px;height:96px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  gap:6px;padding:8px 4px;border-radius:8px;cursor:pointer;text-align:center;
+}
+.icon:hover,.icon:focus{background:rgba(49,168,255,.18);outline:1px solid rgba(49,168,255,.4);}
+.icon .ico{font-size:34px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));}
+.icon span{font-size:11.5px;line-height:1.2;color:#eee;text-shadow:0 1px 2px #000;}
+
+/* ---------- TASKBAR ---------- */
+#taskbar{
+  position:fixed;left:0;right:0;bottom:0;height:46px;background:#111;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;padding:0 8px;z-index:800;
+}
+#startBtn{
+  display:flex;align-items:center;gap:6px;background:var(--blue);color:#001e36;font-weight:800;
+  border:none;border-radius:7px;padding:8px 12px;cursor:pointer;font-size:13px;
+}
+#searchTask{
+  flex:0 0 260px;background:#1b1b1b;border:1px solid var(--border);border-radius:7px;color:#eee;
+  padding:8px 10px;font-size:13px;
+}
+#runningApps{display:flex;gap:6px;overflow-x:auto;flex:1;}
+.taskchip{background:#1b1b1b;border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;color:#ccc;white-space:nowrap;}
+.taskchip.active{border-color:var(--blue);color:var(--blue);}
+#clock{font-size:12px;color:var(--muted);white-space:nowrap;padding-left:6px;}
+
+/* ---------- START MENU ---------- */
+#startMenu{
+  position:fixed;left:8px;bottom:50px;width:380px;max-height:70vh;background:#161616;
+  border:1px solid var(--border);border-radius:10px;box-shadow:0 20px 50px rgba(0,0,0,.6);
+  display:none;flex-direction:column;z-index:900;overflow:hidden;
+}
+#startMenu.show{display:flex;}
+#startMenu header{padding:12px;border-bottom:1px solid var(--border);}
+#startMenu input{width:100%;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:#0f0f0f;color:#eee;font-size:13px;}
+#startResults{overflow:auto;padding:8px;}
+.startgroup h4{margin:10px 6px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);}
+.startitem{padding:8px 10px;border-radius:6px;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;}
+.startitem:hover{background:rgba(49,168,255,.15);}
+.startitem b{font-weight:600;}
+.startitem small{color:var(--muted);}
+
+/* ---------- WINDOWS ---------- */
+.win{
+  position:fixed;width:var(--win-w);height:var(--win-h);background:#161616;border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:0 24px 60px rgba(0,0,0,.55);display:flex;flex-direction:column;
+  overflow:hidden;z-index:100;
+}
+.win.min{display:none;}
+.win .titlebar{
+  height:38px;background:linear-gradient(180deg,#222,#181818);display:flex;align-items:center;
+  padding:0 10px;gap:8px;cursor:move;border-bottom:1px solid var(--border);
+}
+.win .titlebar .dot{width:12px;height:12px;border-radius:50%;cursor:pointer;}
+.dot.red{background:#ff5f57;} .dot.yellow{background:#febc2e;} .dot.green{background:#28c840;}
+.win .titlebar .title{flex:1;text-align:center;font-size:13px;font-weight:600;color:#ddd;}
+.win .body{flex:1;overflow:auto;padding:16px 18px;font-size:13.5px;line-height:1.55;}
+.win .body h2{margin:0 0 4px;font-size:19px;color:var(--blue);}
+.win .body .sub{color:var(--muted);margin:0 0 16px;font-size:12.5px;}
+
+.toolgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.toolcard{background:#1c1c1c;border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.toolcard h3{margin:0 0 2px;font-size:14.5px;color:#fff;display:flex;align-items:center;gap:8px;}
+.toolcard .shortcut{display:inline-block;background:#0f0f0f;border:1px solid var(--border);color:var(--accent);
+  font-size:11px;padding:1px 7px;border-radius:5px;margin-left:auto;}
+.toolcard p{margin:6px 0;color:#ccc;}
+.toolcard ul{margin:6px 0;padding-left:18px;color:#c7c7c7;}
+.toolcard .tip{margin-top:8px;font-size:12px;color:var(--ok);border-top:1px dashed var(--border);padding-top:6px;}
+.toolcard .tip b{color:var(--ok);}
+
+.pillbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.pillbar button{background:#1c1c1c;border:1px solid var(--border);color:#ccc;padding:6px 11px;border-radius:20px;font-size:12px;cursor:pointer;}
+.pillbar button.active{background:var(--blue);color:#001e36;border-color:var(--blue);font-weight:700;}
+
+table.shortcuts{width:100%;border-collapse:collapse;font-size:12.8px;}
+table.shortcuts th{text-align:left;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--border);}
+table.shortcuts td{padding:7px 8px;border-bottom:1px solid #222;}
+table.shortcuts td.key{color:var(--accent);white-space:nowrap;font-family:"Courier New",monospace;}
+
+.menu-card{background:#1c1c1c;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+.menu-card h3{margin:0 0 6px;color:var(--blue);font-size:14.5px;}
+.menu-card ul{margin:0;padding-left:18px;color:#ccc;}
+
+.step{background:#1c1c1c;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+.step h3{margin:0 0 6px;font-size:14.5px;color:var(--blue);}
+.step ol{margin:6px 0 0;padding-left:20px;color:#ccc;}
+.step ol li{margin-bottom:4px;}
+
+.badge{display:inline-block;background:rgba(49,168,255,.15);color:var(--blue);border:1px solid rgba(49,168,255,.4);
+  border-radius:20px;padding:3px 10px;font-size:11px;margin-bottom:10px;}
+
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:#333;border-radius:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+@media (max-width:640px){
+  #searchTask{display:none;}
+  .icon{width:76px;}
+  #startMenu{width:92vw;}
+}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="logo">Ps OS</div>
+  <div class="bar"><i></i></div>
+  <small>INICIANDO PHOTOSHOP OS · CARGANDO MANUAL COMPLETO…</small>
+</div>
+
+<div id="desktop">
+  <div class="menubar" id="menubar">
+    <div class="brand">Ps OS</div>
+    <!-- menu items injected by JS -->
+  </div>
+  <div id="icons"></div>
+</div>
+
+<div id="startMenu">
+  <header><input id="searchStart" placeholder="Buscar herramienta, panel, atajo o menú…" autocomplete="off"></header>
+  <div id="startResults"></div>
+</div>
+
+<div id="taskbar">
+  <button id="startBtn">⌘ Inicio</button>
+  <input id="searchTask" placeholder="Buscar herramienta… (ej. lazo, pluma, dodge)">
+  <div id="runningApps"></div>
+  <div id="clock"></div>
+</div>
+
+<div id="windows"></div>
+
+<script>
+/* =========================================================
+   PHOTOSHOP OS — datos del manual
+   ========================================================= */
+
+const CATEGORIES = [
+  {id:'inicio',     icon:'🏠', name:'Bienvenida',                app:true},
+  {id:'seleccion',  icon:'🖱️', name:'Selección y Recorte',       app:true},
+  {id:'retoque',    icon:'🩹', name:'Retoque y Reparación',      app:true},
+  {id:'pintura',    icon:'🎨', name:'Pintura y Color',           app:true},
+  {id:'dibujo',     icon:'✒️', name:'Dibujo, Plumas y Formas',   app:true},
+  {id:'texto',      icon:'🔤', name:'Texto',                     app:true},
+  {id:'navegacion', icon:'🧭', name:'Navegación y Vista',        app:true},
+  {id:'paneles',    icon:'🗂️', name:'Paneles (Ventanas)',        app:true},
+  {id:'menus',      icon:'📜', name:'Barra de Menús',            app:true},
+  {id:'atajos',     icon:'⌨️', name:'Atajos de Teclado',         app:true},
+  {id:'ia',         icon:'✨', name:'IA Generativa',             app:true},
+  {id:'flujos',     icon:'🧩', name:'Flujos de Trabajo',         app:true},
+  {id:'glosario',   icon:'📖', name:'Glosario Rápido',           app:true},
+];
+
+const CAT_INFO = {
+  seleccion:  'Herramientas para elegir zonas de la imagen, recortar el lienzo y medir.',
+  retoque:    'Herramientas para reparar, clonar, borrar y corregir tonos de piel/luz.',
+  pintura:    'Herramientas para pintar, mezclar color y rellenar con degradados o patrones.',
+  dibujo:     'Herramienta Pluma, puntos de ancla y formas vectoriales.',
+  texto:      'Creación y edición de texto y máscaras de texto.',
+  navegacion: 'Moverte por el lienzo: mano, zoom, rotar vista y máscara rápida.',
+};
+
+/* Cada herramienta: nombre, atajo, grupo, icono, descripción, pasos, tip */
+const TOOLS = [
+// ---------------- SELECCIÓN Y RECORTE ----------------
+{g:'seleccion',n:'Mover',k:'V',i:'✛',d:'Desplaza capas, selecciones y objetos dentro del lienzo o entre documentos.',
+ s:['Selecciona la capa en el panel Capas.','Arrastra en el lienzo o usa las flechas del teclado para mover 1px (Shift+flecha = 10px).','Activa "Auto-Seleccionar" para elegir capas haciendo clic directo sobre ellas.'],
+ t:'Mantén Alt mientras arrastras para duplicar la capa al instante.'},
+{g:'seleccion',n:'Tabla de Artes (Artboard)',k:'V',i:'🗺️',d:'Crea "mesas de trabajo" múltiples dentro de un mismo documento, ideal para diseñar varias pantallas o tamaños.',
+ s:['Actívala desde el grupo de la herramienta Mover.','Haz clic en los signos + alrededor de una tabla para crear otra pegada.','Renombra cada tabla desde el panel Capas para exportarlas por separado.'],
+ t:'Usa Archivo > Exportar > Artboards a Archivos para sacar todas las mesas en PNG/JPG de un tirón.'},
+{g:'seleccion',n:'Marco de Selección Rectangular',k:'M',i:'▭',d:'Selecciona áreas rectangulares o cuadradas exactas.',
+ s:['Haz clic y arrastra sobre el lienzo.','Mantén Shift para forzar un cuadrado perfecto.','Ajusta "Estilo: Tamaño fijo" en la barra de opciones para medidas exactas en px.'],
+ t:'Con Alt restas de la selección activa; con Shift sumas.'},
+{g:'seleccion',n:'Marco de Selección Elíptica',k:'M (Shift+M)',i:'◯',d:'Selecciona áreas circulares u ovaladas.',
+ s:['Haz clic y arrastra desde una esquina imaginaria.','Shift = círculo perfecto.','Alt+arrastrar dibuja desde el centro hacia afuera.'],
+ t:'Actívala con Shift+M si ya tienes activo el marco rectangular.'},
+{g:'seleccion',n:'Marco de Selección de Fila Única',k:'',i:'▬',d:'Selecciona una línea horizontal de 1 píxel de alto, útil para líneas finas o pixel art.',
+ s:['Haz clic en el punto donde quieres la línea.','Rellena con color o borra.'],
+ t:'Combínala con la de columna única para crear cruces o retículas.'},
+{g:'seleccion',n:'Marco de Selección de Columna Única',k:'',i:'▮',d:'Selecciona una línea vertical de 1 píxel de ancho.',
+ s:['Haz clic en el punto exacto.','Usa Editar > Rellenar para pintar la línea.'],
+ t:'Perfecta para crear separadores verticales pixel-perfect en UI.'},
+{g:'seleccion',n:'Lazo',k:'L',i:'➰',d:'Dibuja una selección a mano alzada siguiendo el movimiento del cursor.',
+ s:['Haz clic y arrastra sin soltar alrededor del objeto.','Suelta el clic para cerrar la selección automáticamente.'],
+ t:'Ideal para retoques rápidos donde la precisión exacta no es crítica.'},
+{g:'seleccion',n:'Lazo Poligonal',k:'L',i:'⬠',d:'Crea selecciones con líneas rectas uniendo puntos con clics sucesivos.',
+ s:['Haz clic para cada vértice.','Doble clic o Enter para cerrar el polígono.'],
+ t:'Perfecto para objetos de bordes rectos: cajas, edificios, pantallas.'},
+{g:'seleccion',n:'Lazo Magnético',k:'L',i:'🧲',d:'Se adhiere automáticamente a los bordes de contraste mientras mueves el cursor.',
+ s:['Mueve el cursor cerca del borde del objeto, Photoshop coloca puntos de anclaje solo.','Haz clic manual si necesitas forzar un punto en zonas confusas.','Doble clic para cerrar.'],
+ t:'Sube la "Contraste de bordes" en la barra de opciones si la imagen tiene poco contraste.'},
+{g:'seleccion',n:'Selección de Objeto',k:'W',i:'📦',d:'Detecta automáticamente objetos completos con IA al pasar el cursor o dibujar un rectángulo sobre ellos.',
+ s:['Pasa el cursor sobre el objeto: Photoshop resalta el área detectada.','Haz clic para confirmar la selección.'],
+ t:'Combínala con "Selección de sujeto" para retratos y productos en segundos.'},
+{g:'seleccion',n:'Selección Rápida',k:'W',i:'🖌️',d:'"Pinta" sobre el área que quieres seleccionar; Photoshop expande la selección según los bordes.',
+ s:['Ajusta el tamaño del pincel con [ y ].','Pinta sobre la zona deseada; suma con clic normal, resta con Alt.'],
+ t:'Después usa "Seleccionar y Enmascarar" para perfeccionar bordes con pelo o pelaje.'},
+{g:'seleccion',n:'Varita Mágica',k:'W',i:'🪄',d:'Selecciona píxeles de color/tono similar con un solo clic.',
+ s:['Ajusta la "Tolerancia" (bajo = más preciso, alto = más amplio).','Haz clic sobre el color base.','Activa "Contiguo" para limitar la selección a zonas conectadas.'],
+ t:'Ideal para fondos de color plano (product shots, capturas de pantalla).'},
+{g:'seleccion',n:'Recortar (Crop)',k:'C',i:'✂️',d:'Recorta el lienzo a un nuevo tamaño o relación de aspecto.',
+ s:['Arrastra las esquinas del cuadro de recorte.','Elige una relación de aspecto predefinida en la barra de opciones (1:1, 16:9…).','Pulsa Enter para aplicar.'],
+ t:'Activa "Contenido de relleno" antes de recortar hacia afuera del lienzo original: la IA rellena el área nueva.'},
+{g:'seleccion',n:'Recorte de Perspectiva',k:'C',i:'📐',d:'Endereza objetos fotografiados en ángulo (documentos, edificios, pantallas) mientras recortas.',
+ s:['Marca las 4 esquinas del objeto siguiendo su perspectiva real.','Pulsa Enter: Photoshop corrige la distorsión automáticamente.'],
+ t:'Perfecto para "escanear" fotos de documentos tomadas con el móvil.'},
+{g:'seleccion',n:'Cortar Rodajas (Slice)',k:'C',i:'🔪',d:'Divide un diseño en secciones rectangulares para exportar como piezas web independientes.',
+ s:['Dibuja rectángulos sobre las zonas del diseño.','Exporta con Archivo > Exportar > Guardar para Web (Legacy).'],
+ t:'Muy usado en maquetación de emails y sprites CSS antiguos.'},
+{g:'seleccion',n:'Selección de Rodajas',k:'C',i:'🔲',d:'Selecciona, mueve y redimensiona las rodajas ya creadas con la herramienta Cortar Rodajas.',
+ s:['Haz clic sobre una rodaja existente para editarla.','Arrastra sus bordes para ajustar el tamaño.'],
+ t:'Doble clic sobre una rodaja abre sus opciones de exportación individuales.'},
+{g:'seleccion',n:'Marco (Frame)',k:'K',i:'🖼️',d:'Crea un contenedor con forma (rectángulo o elipse) donde puedes "pegar" cualquier imagen como si fuera una plantilla.',
+ s:['Dibuja el marco sobre el lienzo.','Arrastra una imagen desde el panel Capas o el Explorador dentro del marco.'],
+ t:'Ideal para maquetas rápidas tipo Figma dentro de Photoshop.'},
+{g:'seleccion',n:'Cuentagotas',k:'I',i:'💧',d:'Toma una muestra de color de la imagen y la fija como color frontal.',
+ s:['Haz clic sobre el color deseado.','Ajusta "Tamaño de muestra" (Punto, Promedio 3x3, 5x5…) para evitar ruido.'],
+ t:'Mantén Alt mientras pintas con el Pincel para acceder al cuentagotas temporalmente.'},
+{g:'seleccion',n:'Muestra de Color',k:'I',i:'🎯',d:'Coloca marcadores fijos para monitorear valores de color/tono en el panel Info mientras editas.',
+ s:['Haz clic en los puntos clave (piel, sombra, luz).','Observa los valores RGB en el panel Info mientras ajustas Curvas/Niveles.'],
+ t:'Coloca un marcador en un punto que deba quedar neutro para verificar el balance de color.'},
+{g:'seleccion',n:'Regla',k:'I',i:'📏',d:'Mide distancias y ángulos exactos sobre la imagen.',
+ s:['Arrastra de un punto a otro.','Lee el ángulo y distancia en la barra de opciones.'],
+ t:'Con la línea trazada, usa Imagen > Rotar Lienzo > Arbitrario para enderezar horizontes torcidos automáticamente.'},
+{g:'seleccion',n:'Nota',k:'I',i:'📝',d:'Añade anotaciones de texto ancladas al documento, útiles para colaborar o dejar instrucciones.',
+ s:['Haz clic donde quieras anclar la nota.','Escribe el comentario en el cuadro flotante.'],
+ t:'Perfecto para dejar feedback a otro diseñador sin tocar el diseño.'},
+{g:'seleccion',n:'Contador',k:'I',i:'🔢',d:'Cuenta objetos manualmente haciendo clic sobre cada uno (útil en fotografía científica/inventarios).',
+ s:['Haz clic sobre cada elemento a contar.','El total aparece en la barra de opciones.'],
+ t:'El conteo se puede exportar junto con los datos del panel Medición.'},
+
+// ---------------- RETOQUE ----------------
+{g:'retoque',n:'Pincel Corrector Puntual',k:'J',i:'🔵',d:'Elimina manchas, granos o imperfecciones pequeñas con un solo clic, mezclando la textura automáticamente.',
+ s:['Ajusta el tamaño del pincel un poco más grande que la mancha.','Haz clic (o arrastra) sobre la imperfección.','Photoshop rellena usando la textura de alrededor.'],
+ t:'Activa "Proximidad de contenido" para superficies con patrones repetitivos.'},
+{g:'retoque',n:'Pincel Corrector',k:'J',i:'🩹',d:'Clona textura de una zona de origen y la mezcla con la luz/tono del destino.',
+ s:['Alt+clic para marcar el punto de origen.','Pinta sobre la zona a reparar: la textura se fusiona con el entorno.'],
+ t:'A diferencia del Sello Clonador, este SÍ mezcla tono y luz automáticamente.'},
+{g:'retoque',n:'Parche',k:'J',i:'🧵',d:'Selecciona una zona defectuosa y la reemplaza arrastrándola sobre una zona sana.',
+ s:['Dibuja una selección tipo lazo sobre el defecto.','Arrastra la selección hacia una zona de textura limpia.','Suelta: Photoshop mezcla automáticamente.'],
+ t:'Cambia el modo a "Destino" para clonar la textura buena HACIA el defecto en vez de al revés.'},
+{g:'retoque',n:'Desplazamiento con Reconocimiento de Contenido',k:'J',i:'↔️',d:'Mueve un objeto entero a otra posición y rellena el hueco dejado automáticamente.',
+ s:['Dibuja una selección alrededor del objeto.','Arrástralo a la nueva posición.','Photoshop rellena el origen y funde los bordes.'],
+ t:'Actívalo en modo "Extender" para clonar el objeto en vez de moverlo.'},
+{g:'retoque',n:'Eliminar (Remove Tool)',k:'J',i:'🧽',d:'Herramienta con IA generativa: pinta sobre cualquier objeto no deseado y desaparece rellenando el fondo de forma coherente.',
+ s:['Pinta sobre el objeto que quieres eliminar (cables, turistas, manchas).','Suelta: la IA reconstruye el fondo.'],
+ t:'Más potente que el corrector puntual en fondos complejos como cielo, follaje o multitudes.'},
+{g:'retoque',n:'Sello Clonador',k:'S',i:'🖨️',d:'Clona píxeles exactos de un punto de origen a otro, sin mezclar tono automáticamente.',
+ s:['Alt+clic para fijar el punto de origen.','Pinta sobre el destino: reproduce exactamente esa textura.'],
+ t:'Usa un pincel de baja opacidad y varias pasadas suaves para evitar el efecto "sello repetido".'},
+{g:'retoque',n:'Sello de Patrón',k:'S',i:'🔁',d:'Pinta repitiendo un patrón predefinido o personalizado en lugar de clonar de la imagen.',
+ s:['Elige un patrón en la barra de opciones.','Pinta directamente sobre el lienzo.'],
+ t:'Crea tus propios patrones con Edición > Definir Patrón desde cualquier selección.'},
+{g:'retoque',n:'Pincel de Historia',k:'Y',i:'⏪',d:'"Repinta" partes de la imagen devolviéndolas a un estado anterior guardado en el panel Historial.',
+ s:['Marca el estado de origen en el panel Historial (icono junto al paso).','Pinta sobre las zonas que quieres revertir.'],
+ t:'Perfecto para aplicar un filtro a toda la imagen y luego "revelar" el original solo en ciertas zonas.'},
+{g:'retoque',n:'Pincel de Historia Artístico',k:'Y',i:'🖌️',d:'Igual que el anterior, pero pinta con trazos estilizados tipo impresionista.',
+ s:['Selecciona un estado de historial de origen.','Pinta: obtienes trazos artísticos basados en esa imagen.'],
+ t:'Prueba distintos "Estilos" en la barra de opciones (ajustado, suelto, ondulado) para efectos de pintura.'},
+{g:'retoque',n:'Borrador',k:'E',i:'🧹',d:'Borra píxeles al color de fondo (capa base) o a transparencia (capas normales).',
+ s:['Elige tamaño y dureza del pincel.','Arrastra sobre la zona a borrar.'],
+ t:'En una capa con máscara, es mejor pintar en negro sobre la máscara que borrar directamente (no destructivo).'},
+{g:'retoque',n:'Borrador de Fondos',k:'E',i:'🎭',d:'Borra a transparencia basándose en el color muestreado bajo el cursor, preservando bordes del objeto.',
+ s:['Centra el "punto de mira" en el color de fondo a eliminar.','Arrastra alrededor del borde del objeto.'],
+ t:'Ajusta "Tolerancia" baja para bordes limpios tipo cabello.'},
+{g:'retoque',n:'Borrador Mágico',k:'E',i:'✨',d:'Con un clic, borra todos los píxeles de color similar en la capa (como una Varita Mágica que borra).',
+ s:['Ajusta la tolerancia.','Haz clic sobre el color de fondo a eliminar.'],
+ t:'Ideal para fondos de un solo color plano en capturas o logos.'},
+{g:'retoque',n:'Desenfocar (Blur)',k:'',i:'💨',d:'Suaviza manualmente zonas específicas pasando el pincel sobre ellas.',
+ s:['Ajusta la "Fuerza" en la barra de opciones.','Pasa el pincel repetidamente sobre la zona a suavizar.'],
+ t:'Úsalo para atenuar poros o texturas puntuales sin difuminar toda la imagen.'},
+{g:'retoque',n:'Enfocar (Sharpen)',k:'',i:'🔺',d:'Aumenta el contraste local para dar sensación de nitidez en una zona concreta.',
+ s:['Ajusta la fuerza (usa valores bajos, 10-20%).','Pasa el pincel sobre bordes que quieras resaltar (ojos, pestañas).'],
+ t:'Úsalo con moderación: el exceso genera ruido y artefactos visibles.'},
+{g:'retoque',n:'Dedo (Smudge)',k:'',i:'👆',d:'Empuja y mezcla los píxeles como si arrastraras pintura fresca con el dedo.',
+ s:['Haz clic y arrastra en la dirección deseada.','Activa "Pintar todas las capas" si necesitas mezclar varias capas.'],
+ t:'Genial para pelo suelto, humo o efectos de movimiento pintados a mano.'},
+{g:'retoque',n:'Sobreexponer (Dodge)',k:'O',i:'☀️',d:'Aclara zonas específicas de la imagen, ideal para resaltar luces.',
+ s:['Elige el rango tonal a afectar: Sombras / Medios tonos / Luces.','Pinta suavemente sobre la zona a aclarar.'],
+ t:'Baja la exposición al 10-15% y da varias pasadas suaves en vez de una fuerte.'},
+{g:'retoque',n:'Subexponer (Burn)',k:'O',i:'🌑',d:'Oscurece zonas específicas, perfecta para crear profundidad y sombreado (dodge & burn de retrato).',
+ s:['Elige el rango tonal.','Pinta suavemente sobre la zona a oscurecer.'],
+ t:'Técnica clásica: Dodge & Burn en una capa gris al 50% en modo Luz Suave, 100% no destructivo.'},
+{g:'retoque',n:'Esponja (Sponge)',k:'O',i:'🧽',d:'Aumenta o reduce la saturación de color en una zona concreta.',
+ s:['Elige modo "Saturar" o "Desaturar".','Pinta sobre la zona deseada.'],
+ t:'Desatura ligeramente el fondo para que el sujeto principal resalte más en color.'},
+
+// ---------------- PINTURA Y COLOR ----------------
+{g:'pintura',n:'Pincel',k:'B',i:'🖌️',d:'Pinta trazos de color frontal con control total de tamaño, dureza, opacidad y flujo.',
+ s:['Elige la punta del pincel en el panel Pinceles (F5).','Ajusta tamaño con [ ] y dureza con Shift+[ ].','Pinta directamente sobre una capa (idealmente nueva y vacía).'],
+ t:'Usa una tableta con presión y activa "Control de la pluma" para tamaño/opacidad dinámicos.'},
+{g:'pintura',n:'Lápiz',k:'B',i:'✏️',d:'Como el pincel, pero con bordes duros al 100%, sin antialiasing — ideal para pixel art.',
+ s:['Selecciona tamaño pequeño (1-4px) para trabajo pixel a pixel.','Pinta con el color frontal.'],
+ t:'Combínalo con zoom alto (800%+) y la cuadrícula de píxeles activada (Vista > Mostrar > Cuadrícula de píxeles).'},
+{g:'pintura',n:'Sustitución de Color',k:'B',i:'🌈',d:'Reemplaza el color de un área conservando las texturas y sombras originales.',
+ s:['Elige el nuevo color frontal.','Pinta sobre la zona de color a cambiar (ej. una camiseta).'],
+ t:'Sube el "Límite: Contiguo" y baja la tolerancia para no salirte del área deseada.'},
+{g:'pintura',n:'Pincel Mezclador',k:'B',i:'🎨',d:'Simula pintura real, mezclando colores húmedos entre sí como en un lienzo físico.',
+ s:['Carga color en la punta desde la barra de opciones.','Pinta y observa cómo se mezcla con los colores ya presentes.'],
+ t:'Crea una capa nueva y "muestrea todas las capas" para pintar mezclando sobre la foto original sin destruirla.'},
+{g:'pintura',n:'Bote de Pintura',k:'G',i:'🪣',d:'Rellena áreas de color similar con el color frontal o un patrón, de un solo clic.',
+ s:['Ajusta la tolerancia.','Haz clic sobre el área a rellenar.'],
+ t:'Para rellenos parejos y sin ruido, mejor usa Edición > Rellenar (Mayús+F5).'},
+{g:'pintura',n:'Degradado (Gradient)',k:'G',i:'🌅',d:'Crea transiciones suaves entre dos o más colores.',
+ s:['Elige el degradado en la barra de opciones (o edítalo con doble clic).','Elige el estilo: lineal, radial, angular, reflejado, en diamante.','Arrastra sobre el lienzo para definir dirección y longitud.'],
+ t:'Aplícalo sobre una máscara de capa en blanco/negro para crear transiciones de opacidad perfectas entre dos imágenes.'},
+{g:'pintura',n:'Gota de Material 3D',k:'G',i:'🧫',d:'Aplica materiales y texturas 3D sobre objetos dentro de una escena 3D de Photoshop.',
+ s:['Ten un objeto 3D activo en el documento.','Elige un material en el panel 3D.','Haz clic sobre la superficie para aplicarlo.'],
+ t:'Herramienta específica del módulo 3D, poco usada en flujo de trabajo 2D estándar.'},
+
+// ---------------- DIBUJO / PLUMAS / FORMAS ----------------
+{g:'dibujo',n:'Pluma',k:'P',i:'🖊️',d:'Crea trazados vectoriales precisos mediante puntos de ancla y curvas Bézier.',
+ s:['Haz clic para puntos rectos.','Haz clic y arrastra para crear curvas suaves (aparecen manejadores).','Cierra el trazado haciendo clic sobre el punto inicial.'],
+ t:'La herramienta más precisa para recortes profesionales: convierte el trazado en selección con Ctrl+Enter.'},
+{g:'dibujo',n:'Pluma Libre',k:'P',i:'〰️',d:'Dibuja trazados vectoriales a mano alzada, como el Lazo pero generando un trazado editable.',
+ s:['Activa "Dibujar trazo" para ayuda de trazo asistido.','Dibuja siguiendo el contorno deseado.'],
+ t:'Combínala con la opción "Magnético" en la barra de opciones para que se pegue a bordes de contraste.'},
+{g:'dibujo',n:'Pluma de Curvatura',k:'P',i:'➰',d:'Versión simplificada de la Pluma: crea curvas suaves automáticamente sin manejar tiradores manuales.',
+ s:['Haz clic para cada punto; Photoshop calcula la curva automáticamente.','Doble clic para crear un punto anguloso (esquina dura).'],
+ t:'La forma más rápida de trazar formas orgánicas sin dominar las curvas Bézier clásicas.'},
+{g:'dibujo',n:'Añadir Punto de Ancla',k:'',i:'➕',d:'Agrega un nuevo punto sobre un trazado existente para afinar su forma.',
+ s:['Haz clic sobre cualquier segmento del trazado.'],
+ t:'También puedes Alt+clic con la Pluma normal para el mismo resultado.'},
+{g:'dibujo',n:'Eliminar Punto de Ancla',k:'',i:'➖',d:'Quita un punto de ancla existente simplificando el trazado.',
+ s:['Haz clic directamente sobre el punto a eliminar.'],
+ t:'Elimina puntos innecesarios para trazados más limpios y ligeros.'},
+{g:'dibujo',n:'Convertir Punto',k:'',i:'🔀',d:'Cambia un punto entre "esquina" (recto) y "suave" (curva) arrastrando sus manejadores.',
+ s:['Haz clic en un punto suave para convertirlo en esquina.','Arrastra desde un punto de esquina para generar manejadores de curva.'],
+ t:'Esencial para pulir contornos con partes rectas y curvas combinadas (ej. una taza).'},
+{g:'dibujo',n:'Selección de Trazado',k:'A',i:'➡️',d:'Selecciona y mueve trazados completos.',
+ s:['Haz clic sobre el trazado para seleccionarlo entero.','Arrastra para moverlo.'],
+ t:'Usa las flechas del teclado para mover el trazado con precisión de 1px.'},
+{g:'dibujo',n:'Selección Directa',k:'A',i:'👆',d:'Selecciona y ajusta puntos de ancla individuales o segmentos dentro de un trazado.',
+ s:['Haz clic sobre un punto para seleccionarlo.','Arrastra el punto o sus manejadores para modificar la curva.'],
+ t:'Con Alt puedes arrastrar solo un lado del manejador (curva asimétrica).'},
+{g:'dibujo',n:'Rectángulo',k:'U',i:'⬛',d:'Dibuja rectángulos y cuadrados vectoriales (forma, trazado o píxeles).',
+ s:['Elige el modo: Forma / Trazado / Píxeles en la barra de opciones.','Arrastra sobre el lienzo; Shift = cuadrado perfecto.'],
+ t:'Con una capa de Forma puedes editar las esquinas redondeadas después, desde el panel Propiedades.'},
+{g:'dibujo',n:'Elipse',k:'U',i:'⭕',d:'Dibuja elipses y círculos vectoriales.',
+ s:['Arrastra sobre el lienzo.','Shift = círculo perfecto.'],
+ t:'Perfecta para crear avatares circulares o botones con máscara de recorte.'},
+{g:'dibujo',n:'Triángulo',k:'U',i:'🔺',d:'Dibuja triángulos vectoriales con esquinas ajustables.',
+ s:['Arrastra sobre el lienzo.','Ajusta el "Radio de esquina" en la barra de opciones para bordes redondeados.'],
+ t:'Combínalo con Transformar > Distorsionar para crear flechas o iconos personalizados.'},
+{g:'dibujo',n:'Polígono',k:'U',i:'⬠',d:'Dibuja polígonos regulares o estrellas, definiendo el número de lados.',
+ s:['Escribe el número de lados en la barra de opciones.','Activa "Estrella" y ajusta el % de indentación si quieres puntas.'],
+ t:'Genial para crear íconos de rating (estrellas) o sellos/badges.'},
+{g:'dibujo',n:'Línea',k:'U',i:'📏',d:'Dibuja líneas rectas y flechas con grosor definido.',
+ s:['Ajusta el grosor en px en la barra de opciones.','Activa flechas al inicio/final si las necesitas.','Shift = línea perfectamente horizontal/vertical/45°.'],
+ t:'Útil para crear diagramas, conectores o subrayados de texto.'},
+{g:'dibujo',n:'Forma Personalizada',k:'U',i:'⭐',d:'Dibuja formas predefinidas de la biblioteca (corazones, flechas, íconos) o tus propias formas guardadas.',
+ s:['Elige una forma del selector en la barra de opciones.','Arrastra sobre el lienzo para dibujarla.'],
+ t:'Puedes crear tu propia forma personalizada desde cualquier trazado con Edición > Definir Forma Personalizada.'},
+
+// ---------------- TEXTO ----------------
+{g:'texto',n:'Texto Horizontal',k:'T',i:'🇦',d:'Crea y edita texto en orientación horizontal estándar.',
+ s:['Haz clic sobre el lienzo para texto de punto, o arrastra un cuadro para texto en párrafo.','Escribe y ajusta fuente/tamaño en la barra de opciones o el panel Carácter.'],
+ t:'Convierte el texto a "Forma" (clic derecho en la capa) si necesitas deformarlo o vectorizarlo sin poder editarlo más.'},
+{g:'texto',n:'Texto Vertical',k:'T',i:'🈶',d:'Igual que el horizontal, pero el flujo del texto corre de arriba hacia abajo.',
+ s:['Haz clic o arrastra un cuadro.','Escribe: el texto se apila verticalmente.'],
+ t:'Muy usado en diseño editorial de estilo asiático o efectos tipográficos decorativos.'},
+{g:'texto',n:'Máscara de Texto Horizontal',k:'T',i:'▦',d:'En lugar de crear una capa de texto, genera una SELECCIÓN con la forma de las letras.',
+ s:['Escribe el texto: verás un overlay rojo (modo máscara rápida).','Confirma para obtener una selección con forma de texto.','Usa esa selección para rellenar con foto, degradado o textura.'],
+ t:'Técnica clásica para "texto con foto dentro" en carteles y portadas.'},
+{g:'texto',n:'Máscara de Texto Vertical',k:'T',i:'▥',d:'Igual que la anterior, pero genera la selección con orientación de texto vertical.',
+ s:['Escribe el texto en modo máscara.','Confirma para convertirlo en selección vertical.'],
+ t:'Combínala con capas de ajuste recortadas para efectos tipográficos avanzados.'},
+
+// ---------------- NAVEGACIÓN Y VISTA ----------------
+{g:'navegacion',n:'Mano',k:'H',i:'✋',d:'Desplaza la vista del lienzo (paneo) sin mover ni editar nada.',
+ s:['Arrastra el lienzo en cualquier dirección.'],
+ t:'Mantén pulsada la Barra Espaciadora en CUALQUIER herramienta para acceder a la Mano temporalmente.'},
+{g:'navegacion',n:'Rotar Vista',k:'R',i:'🔄',d:'Rota el lienzo visualmente (no la imagen real) para dibujar/pintar con un mejor ángulo de muñeca.',
+ s:['Arrastra sobre el lienzo para rotar la vista.','Pulsa el botón "Reset View" en la barra de opciones para volver a 0°.'],
+ t:'No modifica el archivo, solo la visualización — perfecto para ilustración digital.'},
+{g:'navegacion',n:'Zoom',k:'Z',i:'🔍',d:'Acerca o aleja la vista del documento.',
+ s:['Haz clic para acercar; Alt+clic para alejar.','Arrastra (Scrubby Zoom) para hacer zoom continuo.'],
+ t:'Ctrl+"+"/Ctrl+"-" hacen zoom sin cambiar de herramienta; Ctrl+0 ajusta a pantalla; Ctrl+1 = 100%.'},
+{g:'navegacion',n:'Modo de Máscara Rápida',k:'Q',i:'🎭',d:'Convierte cualquier selección en una máscara temporal pintable en rojo, y viceversa.',
+ s:['Activa el modo (icono abajo en la caja de herramientas o tecla Q).','Pinta en negro para restar de la selección, en blanco para sumar.','Sal del modo (Q) para volver a ver la selección real (marching ants).'],
+ t:'Mucho más intuitivo que ajustar selecciones con lazos: "pintas" la selección directamente.'},
+{g:'navegacion',n:'Cambiar Colores Frente/Fondo',k:'X · D',i:'⬛⬜',d:'X intercambia el color frontal y de fondo; D restaura los colores por defecto (negro/blanco).',
+ s:['Pulsa X para alternar rápido entre dos colores en uso.','Pulsa D para volver siempre a negro/blanco.'],
+ t:'Con una máscara de capa activa, X+pintar es el combo más usado en retoque no destructivo (ocultar/mostrar).'},
+{g:'navegacion',n:'Cambiar Modo de Pantalla',k:'F',i:'🖥️',d:'Alterna entre ventana estándar, pantalla completa con barra de menú, y pantalla completa total.',
+ s:['Pulsa F repetidamente para ciclar entre los 3 modos.','Pulsa Tab para ocultar/mostrar todos los paneles y maximizar el lienzo visible.'],
+ t:'Usa Mayús+Tab para ocultar solo los paneles laterales, dejando la caja de herramientas visible.'},
+];
+
+const PANELS = [
+{n:'Capas',d:'El corazón de Photoshop. Organiza tu composición en capas apilables, con opacidad, modos de fusión, máscaras y estilos por capa.'},
+{n:'Ajustes',d:'Añade capas de ajuste no destructivas (Curvas, Niveles, Balance de color…) que puedes editar o eliminar en cualquier momento.'},
+{n:'Propiedades',d:'Muestra los controles específicos de lo que tengas seleccionado: una capa de ajuste, una forma, un texto o una máscara.'},
+{n:'Canales',d:'Muestra los canales de color (R, G, B / C, M, Y, K) por separado y permite guardar selecciones como canales alfa.'},
+{n:'Trazados',d:'Administra los trazados vectoriales creados con la Pluma; permite convertirlos en selección o contornearlos con un pincel.'},
+{n:'Historial',d:'Lista cada paso realizado en el documento; haz clic en cualquier estado anterior para volver a él (deshacer múltiple visual).'},
+{n:'Acciones',d:'Graba secuencias de pasos repetitivos y reprodúcelas con un clic, o aplícalas en lote a cientos de imágenes (Archivo > Automatizar > Batch).'},
+{n:'Estilos',d:'Biblioteca de estilos de capa predefinidos (sombras, biseles, resplandores) que se aplican con un clic.'},
+{n:'Carácter',d:'Control tipográfico avanzado: fuente, tamaño, interlineado, tracking, kerning, escala y OpenType.'},
+{n:'Párrafo',d:'Controla alineación, sangrías, espaciado entre párrafos y opciones de justificación del texto.'},
+{n:'Muestras (Swatches)',d:'Guarda y organiza tu paleta de colores favoritos o los de una guía de marca.'},
+{n:'Color',d:'Selector de color detallado en distintos modelos (RGB, HSB, CMYK, Lab, Web).'},
+{n:'Bibliotecas (Libraries)',d:'Sincroniza colores, estilos de texto, gráficos y assets con Creative Cloud para usarlos en otros proyectos y apps de Adobe.'},
+{n:'Timeline (Línea de tiempo)',d:'Crea animaciones cuadro a cuadro o video simple con keyframes, usado para GIFs animados o edición ligera de video.'},
+{n:'Navegador',d:'Miniatura de todo el documento con un recuadro que indica la zona visible; útil para moverte rápido con zoom alto.'},
+{n:'Info',d:'Muestra en tiempo real los valores de color bajo el cursor y las dimensiones/posición de selecciones y herramientas.'},
+{n:'Histograma',d:'Gráfico de distribución tonal de la imagen (sombras, medios, luces); esencial para juzgar exposición y contraste.'},
+{n:'Pinceles',d:'Biblioteca completa de puntas de pincel: forma, textura, dispersión y dinámica de forma/color.'},
+{n:'Ajustes de Pincel (Brush Settings)',d:'Control granular de cada pincel: dureza, espaciado, jitter, dinámica de la pluma, doble punta, textura.'},
+{n:'Comps de Capas (Layer Comps)',d:'Guarda distintos "estados" (visibilidad, posición, estilos) de tu composición para presentar variantes al cliente.'},
+{n:'Fuente de Clonado (Clone Source)',d:'Define hasta 5 puntos de origen para el Sello Clonador/Pincel Corrector, con control de escala y rotación de la fuente.'},
+{n:'Patrones',d:'Biblioteca de patrones/texturas repetibles para usar con el Bote de Pintura, Sello de Patrón o capas de relleno.'},
+{n:'Degradados',d:'Biblioteca y editor de presets de degradado usados por la herramienta Degradado y las capas de relleno.'},
+{n:'Preajustes de Herramienta',d:'Guarda configuraciones completas de una herramienta (pincel + opacidad + modo) para reutilizarlas al instante.'},
+];
+
+const MENUS = [
+{n:'Archivo',items:['Nuevo / Abrir / Abrir como Objeto Inteligente','Guardar / Guardar Como / Exportar Como…','Colocar Incrustado / Colocar Vinculado','Importar (variables, anotaciones, WIA)','Automatizar (Batch, PDF de Contactos, Fusionar a HDR)','Scripts (procesamiento de imágenes, exportar capas a archivos)','Información del Archivo (metadatos)','Imprimir']},
+{n:'Edición',items:['Deshacer / Rehacer / Alternar Última Acción','Cortar / Copiar / Copiar Combinado / Pegar','Rellenar… (Mayús+F5) / Contornear','Transformación Libre (Ctrl+T) / Transformar','Definir Pincel, Patrón o Forma Personalizada','Preferencias','Ajustes de Color (Ctrl+Shift+K)']},
+{n:'Imagen',items:['Modo (RGB, CMYK, Escala de grises, Bits por canal)','Ajustes (Niveles, Curvas, Balance de Color, Tono/Saturación…)','Tamaño de Imagen (Ctrl+Alt+I) / Tamaño de Lienzo (Ctrl+Alt+C)','Rotar Lienzo','Recortar / Recortar y Enderezar','Duplicar / Aplicar Imagen / Calcular','Análisis / Variables']},
+{n:'Capa',items:['Nueva (capa, grupo, desde fondo)','Duplicar Capa / Eliminar','Capas de Ajuste y Relleno','Estilo de Capa (sombra, resplandor, bisel, trazo…)','Máscara de Capa / Máscara de Recorte','Alinear y Distribuir','Fusionar Capas / Aplanar Imagen','Objetos Inteligentes (convertir, editar contenido, filtros)']},
+{n:'Tipo (Type)',items:['Fuente / Tamaño / Alineación rápida','Crear Forma de Trabajo a partir de Texto','Convertir a Forma / Convertir a Objeto Inteligente','Deformar Texto (Warp Text)','Pegar Lorem Ipsum','Revisar Ortografía / Buscar y Reemplazar Texto','Fuentes Faltantes / Resolver Fuentes']},
+{n:'Selección',items:['Todo / Deseleccionar / Volver a Seleccionar (Ctrl+Shift+D)','Invertir (Ctrl+Shift+I)','Todas las Capas / Seleccionar Sujeto / Seleccionar Cielo','Rango de Color','Seleccionar y Enmascarar (Ctrl+Alt+R)','Modificar (Bordear, Suavizar, Expandir, Contraer, Difuminar)','Transformar Selección','Guardar Selección / Cargar Selección (canal alfa)']},
+{n:'Filtro',items:['Último Filtro (Ctrl+F) / Galería de Filtros','Filtros de Desenfoque (Gaussiano, de Lente, de Movimiento)','Camera Raw Filter','Licuar (Ctrl+Shift+X)','Punto de Fuga','Nitidez (Máscara de Enfoque, Enfoque Inteligente)','Ruido (Añadir Ruido, Reducir Ruido)','Renderizar (Nubes, Fibras, Destello de Lente)','Filtros Neuronales (Neural Filters, con IA)']},
+{n:'3D',items:['Nueva Capa 3D desde Archivo','Extrusión 3D desde Capa 2D','Renderizar 3D','Malla (Mesh), Materiales y Luces']},
+{n:'Vista',items:['Zoom In / Zoom Out / Ajustar en Pantalla (Ctrl+0)','Modo de Pantalla Rápida (Q)','Extras (mostrar bordes de selección, cuadrícula, guías)','Regla (Ctrl+R) / Guías / Ajustar a…','Bloquear Guías / Nueva Guía / Nueva Guía por Porcentaje']},
+{n:'Plugins',items:['Explorar en Adobe Exchange','Generative Fill y otros complementos con IA','Administrar Plugins']},
+{n:'Ventana',items:['Organizar (mosaico, cascada, consolidar)','Espacio de Trabajo (Fotografía, Diseño gráfico, esencial…)','Activar/desactivar TODOS los paneles (Capas, Ajustes, Historial, etc.)','Barra de Herramientas personalizada']},
+{n:'Ayuda',items:['Ayuda de Photoshop','Acerca de Photoshop','Actualizaciones / Estado de la cuenta Creative Cloud']},
+];
+
+const SHORTCUTS = [
+['Nueva capa','Ctrl+Shift+N'],['Duplicar capa','Ctrl+J'],['Combinar hacia abajo','Ctrl+E'],
+['Combinar visibles (nueva capa)','Ctrl+Shift+Alt+E'],['Agrupar capas','Ctrl+G'],['Desagrupar','Ctrl+Shift+G'],
+['Máscara de recorte','Ctrl+Alt+G'],['Transformación libre','Ctrl+T'],['Repetir última transformación','Ctrl+Shift+T'],
+['Deshacer','Ctrl+Z'],['Rehacer / paso adelante','Ctrl+Shift+Z'],['Paso atrás','Ctrl+Alt+Z'],
+['Deseleccionar','Ctrl+D'],['Volver a seleccionar','Ctrl+Shift+D'],['Invertir selección','Ctrl+Shift+I'],
+['Seleccionar todo','Ctrl+A'],['Rellenar','Mayús+F5'],['Rellenar con color frontal','Alt+Retroceso'],
+['Rellenar con color de fondo','Ctrl+Retroceso'],['Colores por defecto (B/N)','D'],['Intercambiar frente/fondo','X'],
+['Aumentar/reducir tamaño de pincel','[ / ]'],['Aumentar/reducir dureza de pincel','Shift+[ / Shift+]'],
+['Zoom in / out','Ctrl+"+" / Ctrl+"-"'],['Ajustar a pantalla','Ctrl+0'],['Ver al 100%','Ctrl+1'],
+['Mano temporal','Espacio (mantener)'],['Ocultar todos los paneles','Tab'],['Ocultar paneles laterales','Mayús+Tab'],
+['Ciclar modos de pantalla','F'],['Modo máscara rápida','Q'],['Niveles','Ctrl+L'],['Curvas','Ctrl+M'],
+['Tono/Saturación','Ctrl+U'],['Balance de color','Ctrl+B'],['Blanco y negro','Ctrl+Shift+Alt+B'],
+['Desaturar','Ctrl+Shift+U'],['Invertir colores','Ctrl+I'],['Tamaño de imagen','Ctrl+Alt+I'],
+['Tamaño de lienzo','Ctrl+Alt+C'],['Guardar','Ctrl+S'],['Guardar como','Ctrl+Shift+S'],
+['Exportar como (web)','Ctrl+Shift+Alt+S'],['Nuevo documento','Ctrl+N'],['Abrir','Ctrl+O'],
+['Seleccionar y enmascarar','Ctrl+Alt+R'],['Licuar','Ctrl+Shift+X'],['Camera Raw Filter','Ctrl+Shift+A'],
+['Pegar dentro de la selección','Ctrl+Shift+V'],['Alt+clic en máscara','Ver la máscara sola'],
+];
+
+const AI_TOOLS = [
+{n:'Relleno Generativo (Generative Fill)',d:'Escribe una descripción de texto (o déjalo vacío) sobre una selección y la IA genera contenido fotorrealista que encaja con la escena: añadir, quitar o reemplazar objetos.',
+ s:['Haz una selección con cualquier herramienta (Lazo, Marco, Selección de objeto).','Abre la barra contextual "Generative Fill" y escribe un prompt (opcional).','Elige entre las 3 variaciones generadas en el panel Propiedades.']},
+{n:'Ampliación Generativa (Generative Expand)',d:'Amplía el lienzo más allá de los bordes originales de la foto y la IA rellena el nuevo espacio de forma coherente (útil para cambiar de formato/relación de aspecto).',
+ s:['Usa la herramienta Recortar para agrandar el lienzo.','La barra contextual ofrece "Generative Expand"; añade un prompt si quieres guiar el contenido nuevo.']},
+{n:'Filtros Neuronales (Neural Filters)',d:'Conjunto de filtros basados en IA: retrato inteligente (edad, expresión, mirada), colorización, transferencia de estilo, maquillaje de paisaje y más.',
+ s:['Filtro > Filtros Neuronales.','Activa el filtro que necesites (se descarga la primera vez).','Ajusta los sliders en tiempo real sobre una vista previa.']},
+{n:'Seleccionar Sujeto / Cielo',d:'Con un clic, la IA detecta y selecciona automáticamente el sujeto principal o el cielo de la fotografía.',
+ s:['Selección > Seleccionar Sujeto (o botón en la barra de opciones de casi cualquier herramienta de selección).','Refina el resultado con Seleccionar y Enmascarar si es necesario.']},
+{n:'Eliminar con IA (Remove Tool)',d:'Ya documentada en Retoque: pinta sobre cualquier elemento no deseado y desaparece de forma coherente con el entorno.',
+ s:['Ver categoría "Retoque y Reparación" para el detalle completo.']},
+{n:'Adobe Firefly / Generar Imagen',d:'Genera imágenes completas desde cero a partir de texto, directamente integrado en el flujo de trabajo de Photoshop.',
+ s:['Crea un documento o capa nueva.','Usa el panel de generación de texto a imagen y escribe tu prompt.','La imagen resultante llega como Objeto Inteligente, editable sin perder calidad.']},
+];
+
+const WORKFLOWS = [
+{n:'Retoque de retrato (piel perfecta y profesional)',
+ steps:['Duplica la capa base dos veces: una para frecuencia alta y otra para frecuencia baja (Filtro > Otro > Paso Alto).',
+        'En la capa de baja frecuencia, usa el Parche o Pincel Corrector para igualar el tono de piel sin perder textura.',
+        'En la capa de alta frecuencia (modo Luz Lineal), usa el Pincel Corrector Puntual para quitar imperfecciones puntuales.',
+        'Crea una capa gris 50% en modo Luz Suave y usa Sobreexponer/Subexponer para esculpir luces y sombras (Dodge & Burn).',
+        'Termina con una capa de Curvas para el contraste final y Camera Raw Filter para el color global.']},
+{n:'Quitar fondo y componer sobre uno nuevo',
+ steps:['Selección > Seleccionar Sujeto (o usa la herramienta Selección de Objeto).',
+        'Selección > Seleccionar y Enmascarar para refinar bordes (pelo, transparencias).',
+        'Añade una Máscara de Capa a partir de la selección (icono en el panel Capas).',
+        'Coloca la nueva imagen de fondo debajo del sujeto recortado.',
+        'Iguala la luz/color con una capa de ajuste de Curvas recortada solo al sujeto, y añade una sombra proyectada suave.']},
+{n:'Composición de varias fotos (photobashing)',
+ steps:['Coloca cada imagen como Objeto Inteligente en capas separadas (Archivo > Colocar Incrustado).',
+        'Usa máscaras de capa (no el borrador) para fusionar los bordes entre imágenes.',
+        'Iguala tonos de color entre elementos con capas de ajuste recortadas (Ctrl+Alt+G) por capa.',
+        'Unifica la luz general con una capa de Curvas/Color global arriba de todo, en modo Normal a baja opacidad.',
+        'Añade grano (Filtro > Ruido > Añadir Ruido) para que todas las texturas "peguen" entre sí.']},
+{n:'Banner o post para redes sociales',
+ steps:['Archivo > Nuevo y elige un preset (Instagram Post 1080x1080, Story 1080x1920, etc.).',
+        'Crea una tabla de artes por cada formato si necesitas varias versiones a la vez.',
+        'Usa Texto + capas de Forma para el diseño; agrupa todo en carpetas por sección.',
+        'Verifica contraste de texto con el panel Histograma / vista previa en escala de grises.',
+        'Exporta con Archivo > Exportar > Exportar Como… en PNG-24 o JPG calidad 80-90%.']},
+{n:'Corrección de color profesional',
+ steps:['Abre la imagen con Camera Raw Filter (Ctrl+Shift+A) para ajustar exposición, blancos y negros globales.',
+        'Añade una capa de Curvas: corrige contraste general moviendo la curva en "S" suave.',
+        'Añade Balance de Color para separar tonos en sombras/medios/luces.',
+        'Usa un Muestreador de Color en zonas que deban ser neutras (blanco, gris) para verificar el balance con el panel Info.',
+        'Termina con una capa de Selective Color o Vibrancia para saturar sin quemar los tonos de piel.']},
+{n:'Automatizar tareas repetitivas (Actions + Batch)',
+ steps:['Abre el panel Acciones (Ventana > Acciones) y crea una Acción nueva.',
+        'Pulsa "Grabar" y realiza los pasos que quieres repetir (redimensionar, marca de agua, exportar…).',
+        'Detén la grabación.',
+        'Ve a Archivo > Automatizar > Batch (Lote), elige la acción y la carpeta con todas tus imágenes.',
+        'Photoshop aplicará la acción completa a cada archivo de la carpeta automáticamente.']},
+];
+
+const GLOSSARY = [
+['Objeto Inteligente','Capa que conserva los datos originales de la imagen/vector; permite transformar y aplicar filtros de forma no destructiva.'],
+['Máscara de Capa','Mapa de blanco/negro/grises que oculta (negro) o muestra (blanco) partes de una capa sin borrar píxeles.'],
+['Máscara de Recorte','Hace que una capa solo sea visible dentro del área con contenido de la capa inmediatamente inferior.'],
+['Modo de Fusión','Fórmula matemática que define cómo se combinan los colores de una capa con las capas de abajo (Multiplicar, Trama, Superponer…).'],
+['Capa de Ajuste','Capa que aplica correcciones de color/tono (Curvas, Niveles…) de forma no destructiva y editable en cualquier momento.'],
+['Canal Alfa','Canal adicional en escala de grises usado para guardar selecciones complejas como transparencia reutilizable.'],
+['Antialiasing','Suavizado de bordes dentados en selecciones, texto y formas mezclando píxeles de borde.'],
+['Resolución (PPI)','Píxeles por pulgada; determina la calidad de impresión. Web = 72 ppi, impresión = 300 ppi típicamente.'],
+['No destructivo','Cualquier flujo de edición que no altera los píxeles originales y permite deshacer/ajustar después (máscaras, objetos inteligentes, capas de ajuste).'],
+['Marching Ants','El borde punteado animado que indica el límite de una selección activa.'],
+];
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+
+function toolCard(t,idx){
+  return `<div class="toolcard" id="tool-${idx}">
+    <h3><span>${t.i}</span>${esc(t.n)}${t.k?`<span class="shortcut">${esc(t.k)}</span>`:''}</h3>
+    <p>${esc(t.d)}</p>
+    <ul>${t.s.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+    ${t.t?`<div class="tip"><b>Tip Pro:</b> ${esc(t.t)}</div>`:''}
+  </div>`;
+}
+
+function renderCategoryBody(catId){
+  const list = TOOLS.filter(t=>t.g===catId);
+  return `<span class="badge">${list.length} herramientas</span>
+    <p class="sub">${CAT_INFO[catId]||''}</p>
+    <div class="toolgrid">${list.map((t,i)=>toolCard(t,i)).join('')}</div>`;
+}
+
+function renderPaneles(){
+  return `<span class="badge">${PANELS.length} paneles</span>
+  <p class="sub">Actívalos desde el menú Ventana. Puedes arrastrarlos para acoplarlos donde quieras.</p>
+  <div class="toolgrid">${PANELS.map(p=>`<div class="toolcard"><h3>🗂️ ${esc(p.n)}</h3><p>${esc(p.d)}</p></div>`).join('')}</div>`;
+}
+
+function renderMenus(){
+  return `<span class="badge">${MENUS.length} menús principales</span>
+  <p class="sub">Estructura real de la barra de menús de Photoshop, con los elementos más usados de cada uno.</p>
+  ${MENUS.map(m=>`<div class="menu-card"><h3>${esc(m.n)}</h3><ul>${m.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`).join('')}`;
+}
+
+function renderAtajos(){
+  return `<span class="badge">${SHORTCUTS.length} atajos esenciales</span>
+  <p class="sub">En Mac usa <b>Cmd</b> en vez de Ctrl y <b>Opt</b> en vez de Alt.</p>
+  <table class="shortcuts"><tr><th>Acción</th><th>Atajo</th></tr>
+  ${SHORTCUTS.map(([a,k])=>`<tr><td>${esc(a)}</td><td class="key">${esc(k)}</td></tr>`).join('')}</table>`;
+}
+
+function renderIA(){
+  return `<span class="badge">Photoshop + Inteligencia Artificial</span>
+  <p class="sub">Las herramientas generativas más recientes, integradas directamente en el flujo de trabajo.</p>
+  <div class="toolgrid">${AI_TOOLS.map(t=>`<div class="toolcard"><h3>✨ ${esc(t.n)}</h3><p>${esc(t.d)}</p><ul>${t.s.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`).join('')}</div>`;
+}
+
+function renderFlujos(){
+  return `<span class="badge">${WORKFLOWS.length} flujos de trabajo guiados</span>
+  <p class="sub">Combina varias herramientas paso a paso para lograr resultados profesionales.</p>
+  ${WORKFLOWS.map(w=>`<div class="step"><h3>🧩 ${esc(w.n)}</h3><ol>${w.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>`).join('')}`;
+}
+
+function renderGlosario(){
+  return `<span class="badge">${GLOSSARY.length} términos clave</span>
+  <div class="toolgrid">${GLOSSARY.map(([a,b])=>`<div class="toolcard"><h3>📖 ${esc(a)}</h3><p>${esc(b)}</p></div>`).join('')}</div>`;
+}
+
+function renderInicio(){
+  return `<span class="badge">Bienvenido, señor</span>
+  <p>Este es <b>Photoshop OS</b>: un manual interactivo con forma de sistema operativo, hecho para aprender <b>todas</b> las herramientas de Photoshop de forma ordenada y rápida.</p>
+  <div class="toolgrid">
+    <div class="toolcard"><h3>🖥️ Cómo moverte</h3><p>Haz doble clic en los íconos del escritorio para abrir cada categoría, como si fueran apps.</p></div>
+    <div class="toolcard"><h3>🔎 Buscador</h3><p>Usa la barra inferior o el menú Inicio para buscar cualquier herramienta, panel o atajo al instante.</p></div>
+    <div class="toolcard"><h3>🗔 Ventanas</h3><p>Arrastra la barra superior de cada ventana para moverla. Cierra con el punto rojo, minimiza con el amarillo.</p></div>
+    <div class="toolcard"><h3>📌 Orden sugerido</h3><p>1. Selección → 2. Retoque → 3. Pintura → 4. Dibujo → 5. Texto → 6. Paneles → 7. IA Generativa → 8. Flujos de Trabajo.</p></div>
+  </div>
+  <p class="sub" style="margin-top:16px">Cobertura: ${TOOLS.length} herramientas de la caja de herramientas, ${PANELS.length} paneles, ${MENUS.length} menús, ${SHORTCUTS.length} atajos, ${AI_TOOLS.length} funciones de IA y ${WORKFLOWS.length} flujos de trabajo completos.</p>`;
+}
+
+const RENDERERS = {
+  inicio: renderInicio,
+  seleccion: ()=>renderCategoryBody('seleccion'),
+  retoque: ()=>renderCategoryBody('retoque'),
+  pintura: ()=>renderCategoryBody('pintura'),
+  dibujo: ()=>renderCategoryBody('dibujo'),
+  texto: ()=>renderCategoryBody('texto'),
+  navegacion: ()=>renderCategoryBody('navegacion'),
+  paneles: renderPaneles,
+  menus: renderMenus,
+  atajos: renderAtajos,
+  ia: renderIA,
+  flujos: renderFlujos,
+  glosario: renderGlosario,
+};
+
+/* =========================================================
+   WINDOW MANAGER
+   ========================================================= */
+let zTop = 100;
+const openWins = {}; // id -> {el, minimized}
+
+function openApp(id){
+  const cat = CATEGORIES.find(c=>c.id===id);
+  if(!cat) return;
+  if(openWins[id]){
+    restoreWin(id);
+    return;
+  }
+  const win = document.createElement('div');
+  win.className = 'win';
+  win.id = 'win-'+id;
+  const offset = Object.keys(openWins).length * 26 % 160;
+  win.style.left = (60+offset)+'px';
+  win.style.top = (44+offset)+'px';
+  win.innerHTML = `
+    <div class="titlebar" data-drag>
+      <div class="dot red" data-close></div>
+      <div class="dot yellow" data-min></div>
+      <div class="dot green" data-max></div>
+      <div class="title">${cat.icon} ${esc(cat.name)}</div>
+    </div>
+    <div class="body">
+      <h2>${cat.icon} ${esc(cat.name)}</h2>
+      ${RENDERERS[id] ? RENDERERS[id]() : '<p>Contenido no disponible.</p>'}
+    </div>`;
+  document.getElementById('windows').appendChild(win);
+  openWins[id] = {el:win, minimized:false};
+  makeDraggable(win);
+  win.querySelector('[data-close]').onclick = ()=>closeWin(id);
+  win.querySelector('[data-min]').onclick = ()=>minimizeWin(id);
+  win.querySelector('[data-max]').onclick = ()=>toggleMaximize(win);
+  win.addEventListener('mousedown', ()=>focusWin(id));
+  focusWin(id);
+  renderTaskbar();
+}
+
+function focusWin(id){
+  const w = openWins[id]; if(!w) return;
+  zTop += 1;
+  w.el.style.zIndex = zTop;
+  document.querySelectorAll('.taskchip').forEach(c=>c.classList.toggle('active', c.dataset.id===id));
+}
+
+function closeWin(id){
+  const w = openWins[id]; if(!w) return;
+  w.el.remove();
+  delete openWins[id];
+  renderTaskbar();
+}
+
+function minimizeWin(id){
+  const w = openWins[id]; if(!w) return;
+  w.el.classList.add('min');
+  w.minimized = true;
+  renderTaskbar();
+}
+
+function restoreWin(id){
+  const w = openWins[id]; if(!w) return;
+  w.el.classList.remove('min');
+  w.minimized = false;
+  focusWin(id);
+  renderTaskbar();
+}
+
+function toggleMaximize(win){
+  if(win.dataset.max==='1'){
+    win.style.width='var(--win-w)'; win.style.height='var(--win-h)';
+    win.style.left = win.dataset.prevLeft; win.style.top = win.dataset.prevTop;
+    win.dataset.max='0';
+  }else{
+    win.dataset.prevLeft = win.style.left; win.dataset.prevTop = win.style.top;
+    win.style.left='2vw'; win.style.top='40px'; win.style.width='96vw'; win.style.height='calc(100vh - 100px)';
+    win.dataset.max='1';
+  }
+}
+
+function makeDraggable(win){
+  const bar = win.querySelector('[data-drag]');
+  let sx,sy,ox,oy,dragging=false;
+  bar.addEventListener('mousedown',e=>{
+    if(e.target.closest('.dot')) return;
+    dragging=true; sx=e.clientX; sy=e.clientY;
+    const r = win.getBoundingClientRect(); ox=r.left; oy=r.top;
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!dragging) return;
+    win.style.left = Math.max(0, ox + (e.clientX-sx)) + 'px';
+    win.style.top = Math.max(34, oy + (e.clientY-sy)) + 'px';
+  });
+  window.addEventListener('mouseup',()=>dragging=false);
+}
+
+function renderTaskbar(){
+  const box = document.getElementById('runningApps');
+  box.innerHTML = '';
+  Object.keys(openWins).forEach(id=>{
+    const cat = CATEGORIES.find(c=>c.id===id);
+    const chip = document.createElement('div');
+    chip.className = 'taskchip';
+    chip.dataset.id = id;
+    chip.textContent = `${cat.icon} ${cat.name}`;
+    chip.onclick = ()=>{
+      if(openWins[id].minimized) restoreWin(id);
+      else { minimizeWin(id); }
+    };
+    box.appendChild(chip);
+  });
+}
+
+/* =========================================================
+   DESKTOP ICONS
+   ========================================================= */
+const iconsBox = document.getElementById('icons');
+CATEGORIES.forEach(c=>{
+  const el = document.createElement('div');
+  el.className = 'icon';
+  el.tabIndex = 0;
+  el.innerHTML = `<div class="ico">${c.icon}</div><span>${esc(c.name)}</span>`;
+  el.ondblclick = ()=>openApp(c.id);
+  el.onclick = ()=>{ if(window.matchMedia('(pointer: coarse)').matches) openApp(c.id); };
+  el.onkeydown = (e)=>{ if(e.key==='Enter') openApp(c.id); };
+  iconsBox.appendChild(el);
+});
+
+/* =========================================================
+   MENU BAR (top)
+   ========================================================= */
+const menubar = document.getElementById('menubar');
+MENUS.forEach((m,i)=>{
+  const item = document.createElement('div');
+  item.className='m';
+  item.textContent = m.n;
+  const drop = document.createElement('div');
+  drop.className='menu-drop';
+  drop.innerHTML = m.items.map(x=>`<div>${esc(x)}</div>`).join('') + `<div class="sep"></div><div data-open="menus">Ver panel completo de Menús →</div>`;
+  item.appendChild(drop);
+  item.onclick = (e)=>{
+    e.stopPropagation();
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.menu-drop.show').forEach(d=>d.classList.remove('show'));
+    document.querySelectorAll('.menubar .m.open').forEach(d=>d.classList.remove('open'));
+    if(!wasOpen){ drop.classList.add('show'); item.classList.add('open'); }
+  };
+  drop.querySelector('[data-open]').onclick = (e)=>{e.stopPropagation(); openApp('menus'); drop.classList.remove('show'); item.classList.remove('open');};
+  menubar.appendChild(item);
+});
+document.addEventListener('click', ()=>{
+  document.querySelectorAll('.menu-drop.show').forEach(d=>d.classList.remove('show'));
+  document.querySelectorAll('.menubar .m.open').forEach(d=>d.classList.remove('open'));
+});
+
+/* =========================================================
+   SEARCH (taskbar + start menu)
+   ========================================================= */
+function buildIndex(){
+  const idx = [];
+  TOOLS.forEach(t=>idx.push({type:'Herramienta',name:t.n,extra:t.k,cat:t.g,tool:t}));
+  PANELS.forEach(p=>idx.push({type:'Panel',name:p.n,extra:'',cat:'paneles'}));
+  SHORTCUTS.forEach(([a,k])=>idx.push({type:'Atajo',name:a,extra:k,cat:'atajos'}));
+  MENUS.forEach(m=>idx.push({type:'Menú',name:m.n,extra:'',cat:'menus'}));
+  AI_TOOLS.forEach(t=>idx.push({type:'IA',name:t.n,extra:'',cat:'ia'}));
+  WORKFLOWS.forEach(w=>idx.push({type:'Flujo',name:w.n,extra:'',cat:'flujos'}));
+  GLOSSARY.forEach(([a])=>idx.push({type:'Glosario',name:a,extra:'',cat:'glosario'}));
+  return idx;
+}
+const SEARCH_INDEX = buildIndex();
+
+function runSearch(q, into){
+  q = q.trim().toLowerCase();
+  into.innerHTML = '';
+  if(!q){
+    const groups = {};
+    CATEGORIES.filter(c=>c.id!=='inicio').forEach(c=>groups[c.id]=[]);
+    into.innerHTML = `<div class="startgroup"><h4>Categorías</h4>${CATEGORIES.map(c=>`<div class="startitem" data-open="${c.id}"><b>${c.icon} ${esc(c.name)}</b></div>`).join('')}</div>`;
+  }else{
+    const res = SEARCH_INDEX.filter(r=>r.name.toLowerCase().includes(q)).slice(0,40);
+    if(!res.length){ into.innerHTML = `<div class="startgroup"><h4>Sin resultados</h4><div class="startitem">Prueba con otra palabra…</div></div>`; }
+    else{
+      into.innerHTML = `<div class="startgroup"><h4>${res.length} resultados</h4>${res.map(r=>
+        `<div class="startitem" data-open="${r.cat}"><b>${esc(r.name)}</b><small>${r.type}${r.extra?' · '+esc(r.extra):''}</small></div>`
+      ).join('')}</div>`;
+    }
+  }
+  into.querySelectorAll('[data-open]').forEach(el=>{
+    el.onclick = ()=>{ openApp(el.dataset.open); document.getElementById('startMenu').classList.remove('show'); };
+  });
+}
+
+const startResults = document.getElementById('startResults');
+runSearch('', startResults);
+document.getElementById('searchStart').addEventListener('input', e=>runSearch(e.target.value, startResults));
+document.getElementById('searchTask').addEventListener('input', e=>{
+  document.getElementById('searchStart').value = e.target.value;
+  document.getElementById('startMenu').classList.add('show');
+  runSearch(e.target.value, startResults);
+});
+
+const startBtn = document.getElementById('startBtn');
+const startMenu = document.getElementById('startMenu');
+startBtn.onclick = (e)=>{ e.stopPropagation(); startMenu.classList.toggle('show'); document.getElementById('searchStart').focus(); };
+document.addEventListener('click', (e)=>{
+  if(!startMenu.contains(e.target) && e.target!==startBtn) startMenu.classList.remove('show');
+});
+
+/* =========================================================
+   CLOCK + BOOT
+   ========================================================= */
+function tickClock(){
+  const d = new Date();
+  document.getElementById('clock').textContent = d.toLocaleDateString('es-ES',{weekday:'short',day:'2-digit',month:'short'}) + ' · ' + d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+}
+tickClock(); setInterval(tickClock,1000*30);
+
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    const boot = document.getElementById('boot');
+    boot.classList.add('hide');
+    setTimeout(()=>{ boot.style.display='none'; openApp('inicio'); }, 420);
+  }, 1200);
+});
+</script>
+</body>
+</html>
